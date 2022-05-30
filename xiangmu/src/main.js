@@ -12,11 +12,11 @@ import './assets/icon/iconfont.css'
 //导入接口
 import axios from 'axios'
 //配置请求的根路径
-axios.defaults.baseURL = 'http://81.70.132.82:8000/admin/'
+axios.defaults.baseURL = 'http://81.70.132.82:8000/rms/user/'
 Vue.use(ElementUI);
 Vue.use(less)
 Vue.config.productionTip = false
-Vue.prototype.$http =axios
+Vue.prototype.$http = axios
 new Vue({
   router,
   store,
