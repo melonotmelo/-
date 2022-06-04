@@ -1,9 +1,10 @@
 <template>
-  <div class="login_container">
+  <div class="login_container" >
+    <img src="../assets/登陆背景.jpg">
     <div class="login_box">
       <!--头像区域-->
       <div class="avatar_box">
-        <img src="../assets/logo.png" alt="">
+        <img src="../assets/头像背景.jpg" alt="">
       </div>
       <!--登陆表单区域-->
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="0px" class="login_form">
@@ -60,8 +61,8 @@ export default {
     return{
       //登陆表单绑定的数据
       loginForm:{
-        username:"20373490@buaa.edu.cn",
-        password:"xjp123"
+        username:"",
+        password:""
       },
       //输入的规则
       loginFormRules:{
@@ -124,7 +125,7 @@ export default {
         this.$message.success("登陆成功");
         window.sessionStorage.setItem("token",res.token);
         if(res.level === 'admin') return await this.$router.push("/home");
-        if(res.level === 'user')  return await this.$router.push("/")//需要胡骄阳和石辛诚补一下地址
+        if(res.level === 'user')  return await this.$router.push("/home")//需要胡骄阳和石辛诚补一下地址
       });
     },
     //监听注册对话框的关闭事件
