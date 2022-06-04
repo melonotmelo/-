@@ -20,12 +20,12 @@
       </el-col>
     </el-row>
     <!--用户列表区域-->
-    <el-table :data="userlist" border stripe>
+    <el-table :data="userData.userlist" border stripe>
       <el-table-column type="index"></el-table-column>
       <el-table-column label="用户id" prop="id"></el-table-column>
       <el-table-column label="用户名" prop="username"></el-table-column>
       <el-table-column label="邮箱" prop="email"></el-table-column>
-      <el-table-column label="电话" prop="telephone"></el-table-column>
+      <el-table-column label="电话" prop="tel"></el-table-column>
       <el-table-column label="操作" width="140px">
         <template slot-scope="scope">
           <!--修改按钮-->
@@ -116,10 +116,10 @@ export default {
         pagenum:1,
         pagesize:1
       },
-      userlist: {
-        type:Array
+      userData: {
+        userlist: [],
+        total: 0
       },
-      total:0,
       //控制对话框的出现与隐藏
       addDialogVisible:false,
       //添加用户的表单数据
@@ -182,15 +182,16 @@ export default {
   },
   methods : {
     async getUserList() {
-      const a= await this.$http.get("getUserByAdmin/",{params:{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize}})
-      /*const {data:res1}= await this.$http.post("getUserByAdmin/",{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize })
-      if (res1.status !== 200) {
-        this.$message.error('获取用户列表失败!')
+      //const a= await this.$http.get("getUserByAdmin/",{params:{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize}})
+      const {data:res1}= await this.$http.get("getUserByAdmin/",{params:{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize} })
+      //console.log(a)
+      if (res1.result !== 1) {
+        return this.$message.error('获取用户列表失败!')
       }
       this.$message.success('获取用户列表成功!')
-      this.userlist = res1.data.users
-      this.total = res1.data.total*/
-      console.log(a)
+      this.userData.userlist = res1.users
+      this.userData.total = res1.total
+
     },
     //监听pagesize 改变的事件
     handleSizeChange(newSize) {
@@ -224,16 +225,18 @@ export default {
         if (res1.result === 0) return this.$message.error(res1.msg)
         this.$message.success("注册成功");
         this.addDialogVisible = false;
+        this.getUserList()
       })
     },
     async showEditDialog(id) {
       //console.log(id)
-      const {data:res} =await this.$http.post('getuser/')
-      if(res.meta.status !== 200) return this.$message.error('查询用户信息失败')
+      const {data:res} =await this.$http.post('getuser/',{"id":id})
+      console.log(res)
+      if(res.result !== 1) return this.$message.error('查询用户信息失败')
       this.editForm.id=id
-      this.editForm.username = res.data.username
-      this.editForm.email = res.data.email
-      this.editForm.mobile = res.data.mobile
+      this.editForm.username = res.name
+      this.editForm.email = res.email
+      this.editForm.mobile = res.tel
       this.editDialogVisible = true
     },
     //监听修改用户对话框的关闭事件
@@ -249,9 +252,9 @@ export default {
           "id": this.editForm.id,
           "username": this.editForm.username,
           "email": this.editForm.email,
-          "mobile": this.editForm.mobile
+          "tel": this.editForm.mobile
         })
-        if(res.meta.status !== 200) return this.$message.error('更新用户信息失败')
+        if(res.result !== 1) return this.$message.error('更新用户信息失败')
         this.editDialogVisible = false
         this.getUserList()
         this.$message.success('更新用户信息成功')
@@ -264,7 +267,17 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
+      }).catch(err =>{
+        return err
       })
+      //console.log(confirmResult)
+      if(confirmResult!=='confirm') {
+        return this.$message.info('已取消删除')
+      }
+      const {data:res} = await this.$http.post('deleteUserByAdmin/',{"id":id})
+      if(res.result !== 1) return this.$message.error('删除用户失败')
+      this.$message.success('删除用户成功')
+      this.getUserList()
     }
   }
 }
