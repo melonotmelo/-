@@ -60,8 +60,8 @@ export default {
     return{
       //登陆表单绑定的数据
       loginForm:{
-        username:"",
-        password:""
+        username:"20373490@buaa.edu.cn",
+        password:"xjp123"
       },
       //输入的规则
       loginFormRules:{
@@ -132,27 +132,11 @@ export default {
     },
     //点击按钮，进行注册
     addUser(){
-      this.$refs.addFormRef.validate(async vaild =>{
-        if(!vaild) return
+      this.$refs.addFormRef.validate(async valid =>{
+        if(!valid) return
         //可以发起注册的网络请求
-        const { data:res } = await this.$http.post("register/",{"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
-        console.log(res.errno);
-        if(res.errno===1001)  return this.$message.error("请求方式错误");
-        if(res.errno===1002)  return this.$message.error("用户名过长");
-        if(res.errno===1003)  return this.$message.error("用户名含有非法字符");
-        if(res.errno===1004)  return this.$message.error("用户名已被使用");
-        if(res.errno===1005)  return this.$message.error("邮箱格式不合法");
-        if(res.errno===1006)  return this.$message.error("邮箱已被注册");
-        if(res.errno===1007)  return this.$message.error("邮箱和手机号都为空");
-        if(res.errno===1008)  return this.$message.error("手机号长度不为 11");
-        if(res.errno===1009)  return this.$message.error("手机号已被注册");
-        if(res.errno===1010)  return this.$message.error("身份证号不合法");
-        if(res.errno===1011)  return this.$message.error("身份证号已被使用");
-        if(res.errno===1012)  return this.$message.error("身份证号不合法");
-        if(res.errno===1013)  return this.$message.error("密码长度不合法");
-        if(res.errno===1014)  return this.$message.error("密码类型不合法");
-        if(res.errno===1015)  return this.$message.error("两次输入的密码不同");
-        if(res.errno!==0)  return this.$message.error("注册失败");
+        const {data:res}= await this.$http.post("register/",{"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
+        if(res.result === 0) return this.$message.error(res.msg)
         this.$message.success("注册成功");
         this.addDialogVisible=false;
       })
