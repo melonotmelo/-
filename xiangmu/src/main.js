@@ -12,7 +12,7 @@ import './assets/icon/iconfont.css'
 //导入接口
 import axios from 'axios'
 //配置请求的根路径
-axios.defaults.baseURL = 'http://81.70.132.82:8000/rms/user/'
+axios.defaults.baseURL = 'http://81.70.132.82:8000/rms/'
 axios.interceptors.request.use(config=>{
   console.log(config)
   config.headers.Authorization = window.sessionStorage.getItem('token')

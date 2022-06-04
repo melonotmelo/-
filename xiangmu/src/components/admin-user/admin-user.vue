@@ -42,7 +42,7 @@
         :page-sizes="[1, 2, 5, 10]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total">
+        :total="this.userData.total">
     </el-pagination>
   </el-card>
   <!--添加用户的对话框-->
@@ -183,8 +183,8 @@ export default {
   methods : {
     async getUserList() {
       //const a= await this.$http.get("getUserByAdmin/",{params:{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize}})
-      const {data:res1}= await this.$http.get("getUserByAdmin/",{params:{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize} })
-      //console.log(a)
+      const {data:res1}= await this.$http.get("user/getUserByAdmin/",{params:{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize} })
+      console.log(res1)
       if (res1.result !== 1) {
         return this.$message.error('获取用户列表失败!')
       }
@@ -214,7 +214,7 @@ export default {
       this.$refs.addFormRef.validate(async valid => {
         if (!valid) return
         //可以发起注册的网络请求
-        const {data: res1} = await this.$http.post("register/", {
+        const {data: res1} = await this.$http.post("user/register/", {
           "username": this.addForm.username,
           "password_1": this.addForm.password1,
           "password_2": this.addForm.password2,
@@ -223,14 +223,14 @@ export default {
           "user_id": this.addForm.id
         });
         if (res1.result === 0) return this.$message.error(res1.msg)
-        this.$message.success("注册成功");
+        this.$message.success("添加成功");
         this.addDialogVisible = false;
         this.getUserList()
       })
     },
     async showEditDialog(id) {
       //console.log(id)
-      const {data:res} =await this.$http.post('getuser/',{"id":id})
+      const {data:res} =await this.$http.post('user/getuser/',{"id":id})
       console.log(res)
       if(res.result !== 1) return this.$message.error('查询用户信息失败')
       this.editForm.id=id
@@ -248,7 +248,7 @@ export default {
       this.$refs.editFormRef.validate(async valid => {
         if (!valid) return
         //发起修改用户请求
-        const {data: res} = await this.$http.post('updateUserByAdmin/', {
+        const {data: res} = await this.$http.post('user/updateUserByAdmin/', {
           "id": this.editForm.id,
           "username": this.editForm.username,
           "email": this.editForm.email,
@@ -274,7 +274,7 @@ export default {
       if(confirmResult!=='confirm') {
         return this.$message.info('已取消删除')
       }
-      const {data:res} = await this.$http.post('deleteUserByAdmin/',{"id":id})
+      const {data:res} = await this.$http.post('user/deleteUserByAdmin/',{"id":id})
       if(res.result !== 1) return this.$message.error('删除用户失败')
       this.$message.success('删除用户成功')
       this.getUserList()
