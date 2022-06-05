@@ -6,6 +6,7 @@ import Welcome from '../components/Welcome.vue';
 import AdminUser from '../components/admin-user/admin-user.vue';
 import AdminHouse from '../components/admin-house/admin-house.vue';
 import AdminOrder from '../components/admin-order/admin-order.vue';
+import Test from "../test.vue";
 Vue.use(Router)
 
 const router = new Router({
@@ -20,7 +21,8 @@ const router = new Router({
           {path:'/welcome',component:Welcome},
           {path:'/admin-user',component:AdminUser},
           {path:'/admin-house',component:AdminHouse},
-          {path:'/admin-order',component:AdminOrder}
+          {path:'/admin-order',component:AdminOrder},
+          {path:'/test',component:Test}
       ]
     }
   ]
