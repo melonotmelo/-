@@ -17,10 +17,38 @@
         </el-form-item>
         <el-form-item class="btns">
           <el-button type="primary" @click="login">登陆</el-button>
-          <el-button type="success">注册</el-button>
+          <el-button type="success" @click="addDialogVisible = true">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
+    <!--添加用户的对话框-->
+    <el-dialog title="注册" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+      <!--内容主体区域-->
+      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="150px">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="addForm.username"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password1">
+          <el-input v-model="addForm.password1"></el-input>
+        </el-form-item>
+        <el-form-item label="请再次输入密码" prop="password2">
+          <el-input v-model="addForm.password2"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证号" prop="id">
+          <el-input v-model="addForm.id"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="addForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="mobile">
+          <el-input v-model="addForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -31,80 +59,173 @@ export default {
     return{
       //登陆表单绑定的数据
       loginForm:{
-        username:'',
-        password:''
+        username:"",
+        password:""
       },
       //输入的规则
       loginFormRules:{
         //用户名规则
         username: [
-          {required: true, message: '请输入用户名', trigger: 'blur'},
-          {min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur'}
+          {required: true, message: '请输入邮箱或手机号', trigger: 'blur'},
+          {min: 3, max: 20, message: '不符合要求', trigger: 'blur'}
         ],
         //密码规则
         password: [
           {required: true, message: '请输入密码', trigger: 'blur'},
           {min: 5, max: 18, message: '长度在 5 到 18 个字符', trigger: 'blur'}
         ]
+      },
+      addDialogVisible:false,
+      //添加用户的表单数据
+      addForm:{
+        username: '',
+        password1: '',
+        password2: '',
+        email: '',
+        mobile:'',
+        id:''
+      },
+      //添加表单的验证规则对象
+      addFormRules:{
+        username:[
+          { required : true, message:'请输入用户名' ,trigger:'blur'},
+          { min :3 ,max:20, message: '用户名的长度在3~20个字符之间', trigger: 'blur'}
+        ],
+        password1:[
+          { required : true, message:'请输入密码' ,trigger:'blur'},
+          { min :5 ,max:18, message: '密码的长度在5~18个字符之间', trigger: 'blur'}
+        ],
+        password2:[
+          { required : true, message:'请输入密码' ,trigger:'blur'},
+          { min :5 ,max:18, message: '密码的长度在5~18个字符之间', trigger: 'blur'}
+        ],
+        email:[
+          { required : true, message:'请输入邮箱' ,trigger:'blur'}
+        ],
+        mobile:[
+          { required : true, message:'请输入手机号' ,trigger:'blur'},
+          { min :11 ,max:11, message: '手机号不为11位', trigger: 'blur'}
+        ],
+        id:[
+          { required : true, message:'请输入身份证号' ,trigger:'blur'},
+          { min :18 ,max:18, message: '身份证号不为18位', trigger: 'blur'}
+        ]
       }
     }
   },
   methods:{
+    async getInfo(){
+      const {data: res} = await this.$http.post("user/getuser/", {'id': this.$store.state.id});
+      console.log(res);
+      this.$store.commit('setAvatar', res.url);
+      this.$store.commit('setUsername', res.name);
+      this.$store.commit('setSex', res.sex);
+      this.$store.commit('setMobile', res.tel);
+      this.$store.commit('setEmail', res.email);
+      this.$store.commit('setIdCard', res.id_card);
+    },
     //预验证
     login(){
-      this.$refs.loginFormRef.validate((valid)=>{
+      this.$refs.loginFormRef.validate( async valid =>{
         if(!valid) return;
-        this.$http
-      }
-      );
+        const { data: res }= await this.$http.post("user/login/",{"email": this.loginForm.username,"tel": this.loginForm.username,"password": this.loginForm.password});
+        if(res.result!==1) return this.$message.error(res.msg);
+        this.$message.success("登陆成功");
+        console.log(res);
+
+        window.sessionStorage.setItem('token',res.token);
+        window.sessionStorage.setItem('id',res.id);
+        window.sessionStorage.setItem('password', this.loginForm.password);
+        const {data: res2} = await this.$http.post("user/getuser/", {'id': res.id});
+        console.log(res2);
+
+        window.sessionStorage.setItem('avatar', 'http://'+res2.avatar);
+        window.sessionStorage.setItem('username', res2.name);
+        window.sessionStorage.setItem('sex', res2.sex);
+        window.sessionStorage.setItem('mobile', res2.tel);
+        window.sessionStorage.setItem('email', res2.email);
+        window.sessionStorage.setItem('id_card', res2.id_card);
+
+        await this.$router.push("/home");
+      });
+    },
+    //监听注册对话框的关闭事件
+    addDialogClosed(){
+      this.$refs.addFormRef.resetFields()
+    },
+    //点击按钮，进行注册
+    addUser(){
+      this.$refs.addFormRef.validate(async vaild =>{
+        if(!vaild) return
+        //可以发起注册的网络请求
+        const { data:res } = await this.$http.post("user/register/",{"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
+        console.log(res.errno);
+        if(res.errno===1001)  return this.$message.error("请求方式错误");
+        if(res.errno===1002)  return this.$message.error("用户名过长");
+        if(res.errno===1003)  return this.$message.error("用户名含有非法字符");
+        if(res.errno===1004)  return this.$message.error("用户名已被使用");
+        if(res.errno===1005)  return this.$message.error("邮箱格式不合法");
+        if(res.errno===1006)  return this.$message.error("邮箱已被注册");
+        if(res.errno===1007)  return this.$message.error("邮箱和手机号都为空");
+        if(res.errno===1008)  return this.$message.error("手机号长度不为 11");
+        if(res.errno===1009)  return this.$message.error("手机号已被注册");
+        if(res.errno===1010)  return this.$message.error("身份证号不合法");
+        if(res.errno===1011)  return this.$message.error("身份证号已被使用");
+        if(res.errno===1012)  return this.$message.error("身份证号不合法");
+        if(res.errno===1013)  return this.$message.error("密码长度不合法");
+        if(res.errno===1014)  return this.$message.error("密码类型不合法");
+        if(res.errno===1015)  return this.$message.error("两次输入的密码不同");
+        if(res.result!==1)  return this.$message.error("注册失败");
+        this.$message.success("注册成功");
+        this.addDialogVisible=false;
+      })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-    .login_container{
-      background-color: #2b4b6b;
-      height: 100%;
-    }
-    .login_box{
-      width:450px;
-      height: 300px;
-      background-color: #fff;
-      border-radius: 3px;
-      position: absolute;
-      left: 50%;
-      top:  50%;
-      transform: translate(-50%,-50%);
-
-      .avatar_box{
-        height: 130px;
-        width: 130px;
-        border: 1px solid #eee;
-        border-radius: 50%;
-        padding: 10px;
-        box-shadow: 0 0 10px #ddd;
-        position: absolute;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        background-color: #fff;
-        img{
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          background-color: #eeeeee;
-        }
-      }
-    }
-    .login_form{
-      position: absolute;
-      bottom: 0;
+.login_container{
+  background-color: #2b4b6b;
+  height: 100%;
+}
+.login_box{
+  width:450px;
+  height: 300px;
+  background-color: #fff;
+  border-radius: 3px;
+  position: absolute;
+  left: 50%;
+  top:  50%;
+  transform: translate(-50%,-50%);
+  .avatar_box{
+    height: 130px;
+    width: 130px;
+    border: 1px solid #eee;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 0 10px #ddd;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-color: #fff;
+    img{
       width: 100%;
-      padding: 0 20px;
-      box-sizing: border-box;
+      height: 100%;
+      border-radius: 50%;
+      background-color: #eeeeee;
     }
-    .btns{
-      display: flex;
-      justify-content: flex-end;
-    }
+  }
+}
+.login_form{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+.btns{
+  display: flex;
+  justify-content: flex-end;
+}
 </style>
