@@ -5,6 +5,7 @@ import PersonalCenter from '../components/PersonalCenter'
 import Home from '../components/Home'
 import Contract from "@/components/Contract";
 import test from "@/components/test";
+import Info from "@/components/Info";
 
 Vue.use(VueRouter)
 
@@ -13,7 +14,8 @@ export default new VueRouter({
     { path:'/' ,redirect:'/login'},
     { path: '/login',component:Login},
     { path: '/home',component:Home, meta:{keepAlive:true}},
-    { path: '/home/contract',component:Contract},
+    { path: '/home/info',component:Info},
+    { path: '/home/info/contract',component:Contract},
     { path: '/personalCenter',component:PersonalCenter},
     { path: '/test',component:test}
   ]

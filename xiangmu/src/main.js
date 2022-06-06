@@ -18,6 +18,7 @@ Vue.use(ElementUI);
 Vue.use(less)
 Vue.config.productionTip = false
 Vue.prototype.$http =axios
+
 new Vue({
   router,
   store,

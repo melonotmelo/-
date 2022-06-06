@@ -18,7 +18,7 @@
 
     <!--搜索框-->
     <div class="header">
-      <div style="padding-top: 60px">
+      <div style="padding-top: 70px">
         <el-row class="search" type="flex" justify="center">
           <el-col :span="8">
             <el-input
@@ -53,7 +53,7 @@
         </el-radio-group>
       </el-row>
       <el-row class="crow">
-        <label>短租月租 </label>
+        <label>短租日租 </label>
         <el-radio-group :disabled="rent_way === 'long'" v-model="max_price" @change="handleChange2">
           <el-radio :label="30" >30元以下</el-radio>
           <el-radio :label="50" >50元以下</el-radio>
@@ -91,7 +91,7 @@
               >
             <el-col :span="5" style="height: 100%">
               <el-row style="height: 90%;">
-                <el-image :src="item.image" style="height: 100%; width: 100%"></el-image>
+                <el-image :src="'http://' + item.imgs[0].url" style="height: 100%; width: 100%"></el-image>
               </el-row>
             </el-col>
             <el-col :span="11">
@@ -110,13 +110,13 @@
             </el-col>
             <el-col :span="8" style="height: 100%;">
               <el-row>
-                <span style="color:red;font-weight: bold;font-size: 28px">长租：{{item.long_price}}元/月</span>
+                <span style="color:#FF552E;font-weight: bold;font-size: 28px">长租：{{item.long_price}}元/月</span>
               </el-row>
               <el-row>
-                <span style="color:red;font-weight: bold;font-size: 28px">短租：{{item.short_price}}元/日</span>
+                <span style="color:#FF552E;font-weight: bold;font-size: 28px">短租：{{item.short_price}}元/日</span>
               </el-row>
               <el-row style="margin-top: 20%; margin-left: 13%" >
-                <el-button type="primary" @click="Contract(index)">租 它！</el-button>
+                <el-button type="primary" @click="Info(index)">详细信息</el-button>
               </el-row>
             </el-col>
           </el-row>
@@ -157,6 +157,10 @@ export default {
       cur_result_cnt: 0,  //当前页结果数
       room: [],
     };
+  },
+  beforeRouteLeave (to, from, next) {
+    from.meta.keepAlive = false;
+    next();
   },
   methods: {
     handleSelect(key, keyPath) {
@@ -243,13 +247,12 @@ export default {
     handleSelect2(){
 
     },
-    Contract(index){
+    Info(index){
       console.log(this.room[index]);
-      window.sessionStorage.setItem('long_price', this.room[index].long_price);
-      window.sessionStorage.setItem('short_price', this.room[index].short_price);
-      window.sessionStorage.setItem('room_id', this.room[index].room_id);
-      window.sessionStorage.setItem('room_name', this.room[index].name);
-      this.$router.push({path:'/home/contract'});
+      window.sessionStorage.setItem('room', JSON.stringify(this.room[index]));
+      //let rooms = JSON.stringify(this.room[index]);
+      //this.$router.push({path:'/home/info', query: {room: rooms}});
+      this.$router.push({path:'/home/info'});
     },
   }
 }
@@ -258,7 +261,7 @@ export default {
 <style scoped>
   .header {
     width: 100%;
-    height: 150px;
+    height: 180px;
     background: #f5f5f6;
   }
   span {

@@ -16,9 +16,8 @@
             <el-step title="长租生成合同" description="若选择长租，则生成合同并下载"></el-step>
           </el-steps>
         </div>
-        <div style="padding-top: 20px; padding-left: 75px">
+        <div style="padding-top: 30px; padding-left: 120px">
           <el-button type="primary" @click="last">上一步</el-button>
-          <el-button type="primary" @click="next">下一步</el-button>
         </div>
       </el-aside>
 
@@ -77,8 +76,8 @@
               <el-input v-model="rent_way2" disabled></el-input>
             </el-form-item>
             <el-form-item label="租金">
-              <el-input v-model="long_price" disabled v-if="ruleForm.rent_way === 'long'"></el-input>
-              <el-input v-model="short_price" disabled v-if="ruleForm.rent_way === 'short'"></el-input>
+              <el-input v-model="room.long_price + '元/月'" disabled v-if="ruleForm.rent_way === 'long'"></el-input>
+              <el-input v-model="room.short_price + '元/日'" disabled v-if="ruleForm.rent_way === 'short'"></el-input>
             </el-form-item>
             <el-form-item label="起始日期">
               <el-input v-model="ruleForm.date1" disabled></el-input>
@@ -87,18 +86,27 @@
               <el-input v-model="ruleForm.date2" disabled></el-input>
             </el-form-item>
             <el-form-item class="button">
-              <el-button>取 消</el-button>
-              <el-button type="primary" @click="order">生成订单</el-button>
+              <el-button type="primary" @click="order">生成订单/下一步</el-button>
             </el-form-item>
           </el-form>
         </div>
 
-        <div style="width: 50%; padding-left: 300px; padding-top: 75px" v-if="active === 2">
+        <div style="width: 50%; padding-left: 300px; padding-top: 30px" v-if="active === 2">
           <img src="../assets/ma.jpg" width="450px" height="500px">
+          <div style="margin-left: 400px; margin-top: 10px">
+            <el-button type="primary" @click="next">下一步</el-button>
+          </div>
         </div>
 
-        <div style="width: 50%; padding-left: 250px; padding-top: 0" v-if="active === 3">
-          <img src="../assets/contract.png" width="600px" height="600px">
+        <div style="width: 60%; padding-left: 250px; padding-top: 0" v-if="active === 3">
+          <el-row>
+            <img src="../assets/contract.png" width="550px" height="550px">
+          </el-row>
+          <el-row style="margin-left: 350px; margin-top: 10px">
+            <el-button type="primary" @click="download('http://81.70.132.82:8000/static/doc/contract.docx')">下载合同</el-button>
+            <el-button type="primary" @click="next">下一步</el-button>
+          </el-row>
+
         </div>
 
 
@@ -121,10 +129,7 @@ export default {
         id_card: window.sessionStorage.getItem('id_card'),
       },
       active: 0,
-      long_price: window.sessionStorage.getItem('long_price') + '元/月',
-      short_price: window.sessionStorage.getItem('short_price') + '元/日',
-      room_id: window.sessionStorage.getItem('room_id'),
-      room_name: window.sessionStorage.getItem('room_name'),
+      room: JSON.parse(window.sessionStorage.getItem('room')),
       ruleForm: {
         date1: '',
         date2: '',
@@ -145,49 +150,38 @@ export default {
     }
   },
   methods: {
-    goBack(){
-      this.$router.push("/home");
+    goBack() {
+      this.$router.push("/home/info");
     },
-    last(){
-      if(this.ruleForm.rent_way === 'long'){
-        if(this.active === 1 || this.active === 4)
+    last() {
+      if (this.ruleForm.rent_way === 'long') {
+        if (this.active === 1 || this.active === 4)
           this.active--;
-        else if(this.active === 3)
+        else if (this.active === 3)
+          this.active -= 2;
+      } else if (this.ruleForm.rent_way === 'short') {
+        if (this.active === 1 || this.active === 2)
+          this.active--;
+        else if (this.active === 4)
           this.active -= 2;
       }
-      else if(this.ruleForm.rent_way === 'short'){
-        if(this.active === 1 || this.active === 2)
-          this.active--;
-        else if(this.active === 4)
-          this.active -= 2;
-      }
     },
-    next(){
-      if(this.active === 0){
-        this.submit();
-      }
-      else if(this.active === 1){
-        this.order();
-      }
-      else
-        this.next2();
-    },
-    next2(){
-      if(this.ruleForm.rent_way === 'long'){
-        if(this.active === 0)
+    next() {
+      if (this.ruleForm.rent_way === 'long') {
+        if (this.active === 0)
           this.active++;
-        else if(this.active === 1)
+        else if (this.active === 1)
           this.active += 2;
-        else if(this.active === 3){
+        else if (this.active === 3) {
           this.active++;
           this.$message.success("恭喜您，租房成功！");
           this.$router.push("/home");
         }
       }
-      else if(this.ruleForm.rent_way === 'short'){
-        if(this.active === 0 || this.active === 1)
+      else if (this.ruleForm.rent_way === 'short') {
+        if (this.active === 0 || this.active === 1)
           this.active++;
-        else if(this.active === 2){
+        else if (this.active === 2) {
           this.active += 2;
           this.$message.success("恭喜您，租房成功！");
           this.$router.push("/home");
@@ -196,35 +190,46 @@ export default {
       }
     },
 
-    handleChange(val){
+    handleChange(val) {
       //this.rent_way = val;
       console.log(this.ruleForm.rent_way);
     },
-    reset(){
+    reset() {
       this.$refs.applyRef.resetFields();
     },
-    submit(){
-      this.$refs.applyRef.validate(valid =>{
-        if(!valid) return;
-        if(this.ruleForm.rent_way === 'long')
+    submit() {
+      this.$refs.applyRef.validate(valid => {
+        if (!valid) return;
+        if (this.ruleForm.rent_way === 'long')
           this.rent_way2 = '长租';
-        else if(this.ruleForm.rent_way === 'short')
+        else if (this.ruleForm.rent_way === 'short')
           this.rent_way2 = '短租';
-        this.next2();
+        this.next();
       });
     },
-    order(){
+    order() {
       console.log(this.ruleForm.rent_way);
       this.$refs.orderRef.validate(async valid => {
-        if(!valid) return;
-        const {data: res} = await this.$http.post("order/add_roomorder",
-            {"roomid": this.room_id, "name": this.room_name, "long or short": this.ruleForm.rent_way, "begintime": this.ruleForm.date1, "endtime": this.ruleForm.date2});
+        if (!valid) return;
+        const {data: res} = await this.$http.post("order/add_roomorder/",
+            {
+              "user_id": this.Info.id,
+              "roomid": this.room_id,
+              "long or short": this.ruleForm.rent_way,
+              "begintime": this.ruleForm.date1,
+              "endtime": this.ruleForm.date2
+            });
         console.log(res);
-        if(res.result === 1){
-          this.next2();
+        if (res.result === 1) {
+          this.next();
           this.$message.success("订单生成成功");
+        } else {
+          this.$message.error("啊哦，慢了一步，看看其他房间吧");
         }
       })
+    },
+    download(url) {
+      window.open(url, '_self');
     }
   }
 }
@@ -236,20 +241,20 @@ export default {
   }
 
   .el-header{
-    background-color: #FEFFEA;
+    background-color: #FFF9ED;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
   .el-aside {
-    background-color: #FEFFEA;
+    background-color: #FFF9ED;
     margin: 20px;
 
   }
 
   .el-main {
-    background-color: #FEFFEA;
+    background-color: #FFF9ED;
     margin-top: 20px;
     margin-bottom: 20px;
     margin-right: 20px;

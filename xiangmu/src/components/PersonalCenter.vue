@@ -37,15 +37,16 @@
     </div>
 
     <el-dialog title="修改头像" :visible.sync="DialogVisible" width="30%" :modal-append-to-body="false" center @close="DialogClosed">
-      <el-form :model="Info" ref="avatarRef" label-width="110px">
+      <el-form ref="avatarRef" label-width="110px" enctype="multipart/form-data">
         <div style="margin-left: 155px">点击选取头像</div>
         <el-form-item>
           <el-upload
               class="avatar-uploader"
-              action="https://www.mocky.io/v2/5185415ba171ea3a00704eed/posts/"
+              action=""
               ref="upload"
+              :http-request="upload"
               :show-file-list="false"
-              :on-success="handleAvatarSuccess"
+              :auto-upload="false"
               :before-upload="beforeAvatarUpload">
             <img v-if="Info.newAvatar" :src="Info.newAvatar" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -204,6 +205,14 @@ export default {
       },
     };
   },
+  /*beforeRouteLeave (to, from, next) {
+    if (to.path == "/home") {
+      to.meta.keepAlive = true;
+    } else {
+      to.meta.keepAlive = false;
+    }
+    next();
+  },*/
 
   methods: {
     handleSelect(key, keyPath) {
@@ -229,14 +238,9 @@ export default {
 
       });
     },
-    handleAvatarSuccess(res, file) {
-      this.Info.newAvatar = URL.createObjectURL(file.raw);
-      console.log(this.Info.newAvatar);
-    },
     beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
-
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 格式!');
       }
@@ -262,28 +266,24 @@ export default {
       this.$refs.emailRef.resetFields();
     },
 
-    async changeAvatar(){
-      /*var params = new FormData();
-      params.append('file', this.Info.newAvatar);
-      //this.$refs.avatarRef.submit();
-      //this.Info.newAvatar = this.Info.newAvatar.substring(5);
-      console.log(this.Info.newAvatar);
-      const {data: res} = await this.$http.post("user/uploadHeadshot/",
-          {"id": this.Info.id, "headshot": params});
+    changeAvatar(){
+      this.$refs.upload.submit();
+    },
+    async upload(file) {
+      let fd = new FormData();
+      fd.append("id", this.Info.id);
+      fd.append("img", file.file);
+      const {data: res} = await this.$http.post("user/uploadHeadshot/", fd);
       console.log(res);
-      if(res.result === 1){
-        window.sessionStorage.setItem('avatar', this.Info.newAvatar);
-        this.Info.oldAvatar = this.Info.newAvatar;
+      if (res.result === 1) {
+        window.sessionStorage.setItem('avatar', 'http://' + res.url);
+        this.Info.oldAvatar = 'http://' + res.url;
         this.Info.newAvatar = '';
         this.$message.success("更改头像成功");
-      }*/
-      console.log(this.Info.newAvatar);
-      window.sessionStorage.setItem('avatar', this.Info.newAvatar);
-      this.Info.oldAvatar = this.Info.newAvatar;
-      this.Info.newAvatar = '';
-      this.$message.success("更改头像成功");
+      }
       this.DialogVisible=false;
     },
+
     changePwd(){
       if(this.Info.password1 !== this.Info.password2){
         this.$message({
