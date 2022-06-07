@@ -61,47 +61,47 @@ export default {
       room: JSON.parse(window.sessionStorage.getItem('room')),
     }
   },
-  beforeRouteLeave (to, from, next) {
-    if (to.path == "/home") {
+  /*beforeRouteLeave (to, from, next) {
+    if (to.path === "/home") {
       to.meta.keepAlive = true;
     } else {
       to.meta.keepAlive = false;
     }
     next();
-  },
+  },*/
   methods:{
     goBack(){
-      this.$router.push("/home");
+      this.$router.push("/room");
     },
 
     contract(){
-      this.$router.push({path:'/home/info/contract'});
+      this.$router.push({path:'/room/info/contract'});
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  .info-container{
+.info-container{
 
-    height: 100%;
+  height: 100%;
 
-  }
+}
 
-  .el-header{
-    background-color: #FEFFEF;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.el-header{
+  background-color: #FEFFEF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .el-main {
-    background: url("../assets/back6.png");
-    width: 100%;
-    //height: 100%;
-    background-size: 100% 100%;
+.el-main {
+  background: url("../assets/back6.png");
+  width: 100%;
+  //height: 100%;
+  background-size: 100% 100%;
 
-    //background-color: #FEFFEE;
-    //margin: 15px;
-  }
+  //background-color: #FEFFEE;
+  //margin: 15px;
+}
 </style>

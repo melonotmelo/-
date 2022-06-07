@@ -44,10 +44,11 @@
           <el-input v-model="addForm.mobile"></el-input>
         </el-form-item>
       </el-form>
+      <!--底部区域-->
       <span slot="footer" class="dialog-footer">
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser">确 定</el-button>
-      </span>
+    <el-button @click="addDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addUser">确 定</el-button>
+  </span>
     </el-dialog>
   </div>
 </template>
@@ -59,8 +60,8 @@ export default {
     return{
       //登陆表单绑定的数据
       loginForm:{
-        username:"",
-        password:""
+        username:'',
+        password:''
       },
       //输入的规则
       loginFormRules:{
@@ -114,118 +115,103 @@ export default {
     }
   },
   methods:{
-    async getInfo(){
-      const {data: res} = await this.$http.post("user/getuser/", {'id': this.$store.state.id});
-      console.log(res);
-      this.$store.commit('setAvatar', res.url);
-      this.$store.commit('setUsername', res.name);
-      this.$store.commit('setSex', res.sex);
-      this.$store.commit('setMobile', res.tel);
-      this.$store.commit('setEmail', res.email);
-      this.$store.commit('setIdCard', res.id_card);
-    },
     //预验证
     login(){
       this.$refs.loginFormRef.validate( async valid =>{
         if(!valid) return;
-        const { data: res }= await this.$http.post("user/login/",{"email": this.loginForm.username,"tel": this.loginForm.username,"password": this.loginForm.password});
+        const { data: res }= await this.$http.post("user/login/",
+            {"email": this.loginForm.username,"tel": this.loginForm.username,"password": this.loginForm.password});
         if(res.result!==1) return this.$message.error(res.msg);
         this.$message.success("登陆成功");
-        console.log(res);
+        window.sessionStorage.setItem("token",res.token);
+        if(res.level === 'admin') return await this.$router.push("/home");
+        if(res.level === 'user') {
+          window.sessionStorage.setItem('id',res.id);
+          window.sessionStorage.setItem('password', this.loginForm.password);
+          const {data: res2} = await this.$http.post("user/getuser/", {'id': res.id});
+          console.log(res2);
 
-        window.sessionStorage.setItem('token',res.token);
-        window.sessionStorage.setItem('id',res.id);
-        window.sessionStorage.setItem('password', this.loginForm.password);
-        const {data: res2} = await this.$http.post("user/getuser/", {'id': res.id});
-        console.log(res2);
+          window.sessionStorage.setItem('avatar', 'http://'+res2.avatar);
+          window.sessionStorage.setItem('username', res2.name);
+          window.sessionStorage.setItem('sex', res2.sex);
+          window.sessionStorage.setItem('mobile', res2.tel);
+          window.sessionStorage.setItem('email', res2.email);
+          window.sessionStorage.setItem('id_card', res2.id_card);
 
-        window.sessionStorage.setItem('avatar', 'http://'+res2.avatar);
-        window.sessionStorage.setItem('username', res2.name);
-        window.sessionStorage.setItem('sex', res2.sex);
-        window.sessionStorage.setItem('mobile', res2.tel);
-        window.sessionStorage.setItem('email', res2.email);
-        window.sessionStorage.setItem('id_card', res2.id_card);
+          window.sessionStorage.setItem('flag', 0);
+          window.sessionStorage.setItem('min_price', 0);
+          window.sessionStorage.setItem('max_price', 0);
+          window.sessionStorage.setItem('rent_way', '');
+          window.sessionStorage.setItem('content', '');
 
-        await this.$router.push("/home");
+          return await this.$router.push("/room")//需要胡骄阳和石辛诚补一下地址
+        }
       });
     },
     //监听注册对话框的关闭事件
     addDialogClosed(){
-      this.$refs.addFormRef.resetFields()
+        this.$refs.addFormRef.resetFields()
     },
     //点击按钮，进行注册
     addUser(){
-      this.$refs.addFormRef.validate(async vaild =>{
-        if(!vaild) return
+      this.$refs.addFormRef.validate(async valid =>{
+        if(!valid) return
         //可以发起注册的网络请求
-        const { data:res } = await this.$http.post("user/register/",{"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
-        console.log(res.errno);
-        if(res.errno===1001)  return this.$message.error("请求方式错误");
-        if(res.errno===1002)  return this.$message.error("用户名过长");
-        if(res.errno===1003)  return this.$message.error("用户名含有非法字符");
-        if(res.errno===1004)  return this.$message.error("用户名已被使用");
-        if(res.errno===1005)  return this.$message.error("邮箱格式不合法");
-        if(res.errno===1006)  return this.$message.error("邮箱已被注册");
-        if(res.errno===1007)  return this.$message.error("邮箱和手机号都为空");
-        if(res.errno===1008)  return this.$message.error("手机号长度不为 11");
-        if(res.errno===1009)  return this.$message.error("手机号已被注册");
-        if(res.errno===1010)  return this.$message.error("身份证号不合法");
-        if(res.errno===1011)  return this.$message.error("身份证号已被使用");
-        if(res.errno===1012)  return this.$message.error("身份证号不合法");
-        if(res.errno===1013)  return this.$message.error("密码长度不合法");
-        if(res.errno===1014)  return this.$message.error("密码类型不合法");
-        if(res.errno===1015)  return this.$message.error("两次输入的密码不同");
-        if(res.result!==1)  return this.$message.error("注册失败");
+        const {data:res}= await this.$http.post("user/register/",
+            {"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
+        if(res.result === 0) return this.$message.error(res.msg)
         this.$message.success("注册成功");
         this.addDialogVisible=false;
       })
     }
   }
 }
+
 </script>
 
 <style lang="less" scoped>
-.login_container{
-  background-color: #2b4b6b;
-  height: 100%;
-}
-.login_box{
-  width:450px;
-  height: 300px;
-  background-color: #fff;
-  border-radius: 3px;
-  position: absolute;
-  left: 50%;
-  top:  50%;
-  transform: translate(-50%,-50%);
-  .avatar_box{
-    height: 130px;
-    width: 130px;
-    border: 1px solid #eee;
-    border-radius: 50%;
-    padding: 10px;
-    box-shadow: 0 0 10px #ddd;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    background-color: #fff;
-    img{
-      width: 100%;
+    .login_container{
+      background-color: #2b4b6b;
       height: 100%;
-      border-radius: 50%;
-      background-color: #eeeeee;
     }
-  }
-}
-.login_form{
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 0 20px;
-  box-sizing: border-box;
-}
-.btns{
-  display: flex;
-  justify-content: flex-end;
-}
+    .login_box{
+      width:450px;
+      height: 300px;
+      background-color: #fff;
+      border-radius: 3px;
+      position: absolute;
+      left: 50%;
+      top:  50%;
+      transform: translate(-50%,-50%);
+
+      .avatar_box{
+        height: 130px;
+        width: 130px;
+        border: 1px solid #eee;
+        border-radius: 50%;
+        padding: 10px;
+        box-shadow: 0 0 10px #ddd;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        background-color: #fff;
+        img{
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          background-color: #eeeeee;
+        }
+      }
+    }
+    .login_form{
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+    .btns{
+      display: flex;
+      justify-content: flex-end;
+    }
 </style>

@@ -151,7 +151,7 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push("/home/info");
+      this.$router.push("/room/info");
     },
     last() {
       if (this.ruleForm.rent_way === 'long') {
@@ -175,7 +175,7 @@ export default {
         else if (this.active === 3) {
           this.active++;
           this.$message.success("恭喜您，租房成功！");
-          this.$router.push("/home");
+          this.$router.push("/room");
         }
       }
       else if (this.ruleForm.rent_way === 'short') {
@@ -184,9 +184,8 @@ export default {
         else if (this.active === 2) {
           this.active += 2;
           this.$message.success("恭喜您，租房成功！");
-          this.$router.push("/home");
+          this.$router.push("/room");
         }
-
       }
     },
 
@@ -236,31 +235,31 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .contract-container{
-    height: 100%;
-  }
+.contract-container{
+  height: 100%;
+}
 
-  .el-header{
-    background-color: #FFF9ED;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.el-header{
+  background-color: #FFF9ED;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .el-aside {
-    background-color: #FFF9ED;
-    margin: 20px;
+.el-aside {
+  background-color: #FFF9ED;
+  margin: 20px;
 
-  }
+}
 
-  .el-main {
-    background-color: #FFF9ED;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-right: 20px;
-  }
-  .button{
-    display: flex;
-    justify-content: flex-end;
-  }
+.el-main {
+  background-color: #FFF9ED;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+}
+.button{
+  display: flex;
+  justify-content: flex-end;
+}
 </style>

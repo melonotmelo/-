@@ -1,21 +1,30 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex, { Store } from 'vuex'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {
-    activeIndex: '/home',
+  state: { //全局状态
+    isLogin: false,
   },
   getters: {
   },
   mutations: {
-    setActiveIndex(state, key){
-      state.activeIndex = key;
-    }
+    login(state) {
+      state.isLogin = true;
+    },
+    logout(state) {
+      state.isLogin = false;
+    },
+
   },
   actions: {
   },
   modules: {
   }
 })
+
+
+// Store.state.count
+
+// Store.commit('increment')

@@ -3,9 +3,9 @@
     <el-header>
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal"
                @select="handleSelect" style="padding-left: 15%; padding-right: 15%">
-        <el-menu-item index="/home">租房</el-menu-item>
-        <el-menu-item index="/order">订单中心</el-menu-item>
-        <el-menu-item index="/appealRepair" >投诉与报修</el-menu-item>
+        <el-menu-item index="/room">租房</el-menu-item>
+        <el-menu-item index="/center">订单中心</el-menu-item>
+        <el-menu-item index="/repair" >投诉与报修</el-menu-item>
         <el-menu-item index="/personalCenter">个人中心</el-menu-item>
         <el-menu-item style="float: right">
           <el-avatar :src="Info.oldAvatar"></el-avatar>
@@ -16,7 +16,7 @@
 
     <div class="personal_box">
       <div class="avatar_box" style="cursor:pointer" @click="DialogVisible = true">
-          <img :src="Info.oldAvatar" alt="">
+        <img :src="Info.oldAvatar" alt="">
       </div>
 
       <el-form class="user">
@@ -47,7 +47,8 @@
               :http-request="upload"
               :show-file-list="false"
               :auto-upload="false"
-              :before-upload="beforeAvatarUpload">
+              :before-upload="beforeAvatarUpload"
+              :on-change="filePreview">
             <img v-if="Info.newAvatar" :src="Info.newAvatar" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -205,18 +206,9 @@ export default {
       },
     };
   },
-  /*beforeRouteLeave (to, from, next) {
-    if (to.path == "/home") {
-      to.meta.keepAlive = true;
-    } else {
-      to.meta.keepAlive = false;
-    }
-    next();
-  },*/
-
   methods: {
     handleSelect(key, keyPath) {
-      if(key === '/home' || key === '/order' || key === '/appealRepair' || key === '/personalCenter'){
+      if(key === '/room' || key === '/center' || key === '/repair' || key === '/personalCenter'){
         //this.activeIndex = key;
         //this.$store.commit('setActiveIndex', key);
         this.$router.push({path: key});
@@ -249,9 +241,13 @@ export default {
       }
       return isJPG && isLt2M;
     },
+    filePreview(e){
+      this.Info.newAvatar = URL.createObjectURL(e.raw);
+    },
 
     DialogClosed(){
       this.$refs.avatarRef.resetFields();
+      this.Info.newAvatar = '';
     },
     DialogClosed1(){
       this.DialogVisible1 = false;
@@ -280,6 +276,7 @@ export default {
         this.Info.oldAvatar = 'http://' + res.url;
         this.Info.newAvatar = '';
         this.$message.success("更改头像成功");
+        this.$router.go(0);
       }
       this.DialogVisible=false;
     },
@@ -350,89 +347,89 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .back {
-    background: url("../assets/back.png");
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    background-size: 100% 100%;
-  }
+.back {
+  background: url("../assets/back.png");
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-size: 100% 100%;
+}
 
-  .personal_box {
-    width: 850px;
-    height: 400px;
-    background-color: rgba(255,249,237,0);
-    border-radius: 3px;
+.personal_box {
+  width: 850px;
+  height: 400px;
+  background-color: rgba(255,249,237,0);
+  border-radius: 3px;
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+
+  .avatar_box {
+    height: 120px;
+    width: 120px;
+    border: 1px solid #eee;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 0 10px #ddd;
     position: absolute;
     left: 50%;
-    top: 60%;
     transform: translate(-50%, -50%);
+    background-color: #fff;
 
-    .avatar_box {
-      height: 120px;
-      width: 120px;
-      border: 1px solid #eee;
-      border-radius: 50%;
-      padding: 5px;
-      box-shadow: 0 0 10px #ddd;
-      position: absolute;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #fff;
-
-      img {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background-color: #eee;
-      }
-    }
-
-    .user{
-      position: absolute;
-      bottom: 0;
+    img {
       width: 100%;
-      padding: 0 20px;
-      box-sizing: border-box;
-
-      .username{
-        text-align: center;
-        padding: 35px 20px;
-        //margin-top: 80px;
-      }
-
-      .InfoOp{
-        padding: 0 20px;
-        display: flex;
-        justify-content: center;
-      }
+      height: 100%;
+      border-radius: 50%;
+      background-color: #eee;
     }
   }
-  .avatar-uploader {
-    //border-color: rgba(255,249,237,0);
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    width: 178px;
-    height: 178px;
+
+  .user{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+
+    .username{
+      text-align: center;
+      padding: 35px 20px;
+      //margin-top: 80px;
+    }
+
+    .InfoOp{
+      padding: 0 20px;
+      display: flex;
+      justify-content: center;
+    }
   }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
+}
+.avatar-uploader {
+  //border-color: rgba(255,249,237,0);
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 178px;
+  height: 178px;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 
 </style>

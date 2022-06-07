@@ -1,276 +1,174 @@
 <template>
-  <div>
-    <!--<header></header>-->
-    <!--导航菜单-->
+  <el-container class="home-container">
+    <!--头部区域 -->
     <el-header>
-      <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal"
-               @select="handleSelect" style="padding-left: 15%; padding-right: 15%">
-        <el-menu-item index="/home">租房</el-menu-item>
-        <el-menu-item index="/order">订单中心</el-menu-item>
-        <el-menu-item index="/appealRepair" >投诉与报修</el-menu-item>
-        <el-menu-item index="/personalCenter">个人中心</el-menu-item>
-        <el-menu-item style="float: right">
-          <el-avatar :src="avatar"></el-avatar>
-        </el-menu-item>
-        <el-menu-item @click="logout" style="float: right">退出登录</el-menu-item>
-      </el-menu>
+      <ElCol :span="6" class="logo-container">
+        <img src="../assets/houselogo.png" class="logo" alt="" width="20%">
+        <span class="title"> 青年房屋租赁系统</span>
+      </ElCol>
+      <el-button type="info" @click="logout">退出</el-button>
     </el-header>
-
-    <!--搜索框-->
-    <div class="header">
-      <div style="padding-top: 70px">
-        <el-row class="search" type="flex" justify="center">
-          <el-col :span="8">
-            <el-input
-                placeholder="请输入内容"
-                v-model="searchContent"
-                class="input"
-                style="border-radius: 0"
-            ></el-input>
-          </el-col>
-          <el-button type="primary"  @click="flag = 1, searchHouse()">开始找房</el-button>
-        </el-row>
-      </div>
-    </div>
-
-    <!--筛选条件-->
-    <div style="width: 60%;margin: 0 auto;padding: 20px">
-      <el-row class="crow">
-        <label>出租方式 </label>
-        <el-radio-group v-model="rent_way" @change="handleChange1">
-          <el-radio :label="'long'" >长租</el-radio>
-          <el-radio :label="'short'" >短租</el-radio>
-        </el-radio-group>
-      </el-row>
-      <el-row class="crow">
-        <label>长租月租 </label>
-        <el-radio-group :disabled="rent_way === 'short'" v-model="max_price" @change="handleChange2">
-          <el-radio :label="1000" >1000元以下</el-radio>
-          <el-radio :label="1500" >1500元以下</el-radio>
-          <el-radio :label="2000" >2000元以下</el-radio>
-          <el-radio :label="3000" >3000元以下</el-radio>
-          <el-radio :label="10000" >10000元以下</el-radio>
-        </el-radio-group>
-      </el-row>
-      <el-row class="crow">
-        <label>短租日租 </label>
-        <el-radio-group :disabled="rent_way === 'long'" v-model="max_price" @change="handleChange2">
-          <el-radio :label="30" >30元以下</el-radio>
-          <el-radio :label="50" >50元以下</el-radio>
-          <el-radio :label="70" >70元以下</el-radio>
-          <el-radio :label="100" >100元以下</el-radio>
-          <el-radio :label="900" >900元以下</el-radio>
-        </el-radio-group>
-      </el-row>
-      <el-row style="margin-left: 73%">
-        <el-button type="primary" @click="flag = 2, searchHouse()" >确认选择</el-button>
-      </el-row>
-    </div>
-
-    <!--展示搜索信息-->
-    <div style="width: 60%;margin: 0 auto;padding: 10px">
-      <el-menu
-          :default-active="activeIndex2"
-          class="el-menu-demo"
-          mode="horizontal"
-          @select="handleSelect2"
-      >
-        <el-menu-item index="1">默认排序</el-menu-item>
-      </el-menu>
-      <el-row>
-        <h2>共找到{{all_result_cnt}}套可租房源</h2>
-      </el-row>
-      <el-divider></el-divider>
-      <el-row style="width:100%">
-        <el-col style="width:100%; float:left">
-          <el-row
-              :gutter="25"
-              style="height: 200px;padding-top:10px;border-bottom: 1px #DCDFE6 solid"
-              v-for="(item, index) in room"
-              :key="item.id"
-              >
-            <el-col :span="5" style="height: 100%">
-              <el-row style="height: 90%;">
-                <el-image :src="'http://' + item.imgs[0].url" style="height: 100%; width: 100%"></el-image>
-              </el-row>
-            </el-col>
-            <el-col :span="11">
-              <el-row>
-                <h2>{{item.name}}</h2>
-              </el-row>
-              <el-row class="crow">
-                <span>地址：{{item.address}}</span>
-              </el-row>
-              <el-row class="crow">
-                <span>简介：{{item.introduction}}</span>
-              </el-row>
-              <el-row class="crow">
-                <span>更新时间：{{item.update_time}}</span>
-              </el-row>
-            </el-col>
-            <el-col :span="8" style="height: 100%;">
-              <el-row>
-                <span style="color:#FF552E;font-weight: bold;font-size: 28px">长租：{{item.long_price}}元/月</span>
-              </el-row>
-              <el-row>
-                <span style="color:#FF552E;font-weight: bold;font-size: 28px">短租：{{item.short_price}}元/日</span>
-              </el-row>
-              <el-row style="margin-top: 20%; margin-left: 13%" >
-                <el-button type="primary" @click="Info(index)">详细信息</el-button>
-              </el-row>
-            </el-col>
-          </el-row>
-        </el-col>
-      </el-row>
-      <el-pagination
-          @size-change="size_change"
-          @current-change="current_change"
-          :current-page.sync="currentPage"
-          :page-sizes="[2, 5, 10]"
-          :page-size="page_size"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="all_result_cnt"
-      ></el-pagination>
-    </div>
-
-
-  </div>
+    <!-- 页面主体区域-->
+    <el-container>
+      <!-- 侧边栏 -->
+      <el-aside :width="isCollapse ? '64px' : '200px'">
+        <div class="toggle-button" @click="toggleCollpse">|||</div>
+        <!--侧边栏菜单区域-->
+        <el-menu
+            background-color="#333744"
+            text-color="#fff"
+            active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition="false"
+            router
+            :default-active="activePath">
+          <!--一级菜单-->
+          <el-submenu index="1">
+            <!--一级菜单的模板区域-->
+            <template slot="title">
+              <!---图标-->
+              <i class="el-icon-s-custom"></i>
+              <!--文本-->
+              <span>用户管理</span>
+            </template>
+            <el-menu-item index="admin-user"  @click="saveNavState('/admin-user')">
+              <template slot="title">
+                <!---图标-->
+                <i class="el-icon-menu"></i>
+                <!--文本-->
+                <span>用户列表</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu index="2">
+            <!--一级菜单的模板区域-->
+            <template slot="title">
+              <!---图标-->
+              <i class="el-icon-s-home"></i>
+              <!--文本-->
+              <span>房源管理</span>
+            </template>
+            <el-menu-item index="admin-house"  @click="saveNavState('/admin-house')">
+              <template slot="title">
+                <!---图标-->
+                <i class="el-icon-menu"></i>
+                <!--文本-->
+                <span>房源列表</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu index="3">
+            <!--一级菜单的模板区域-->
+            <template slot="title">
+              <!---图标-->
+              <i class="el-icon-s-order"></i>
+              <!--文本-->
+              <span>订单管理</span>
+            </template>
+            <el-menu-item index="admin-order"  @click="saveNavState('/admin-order')">
+              <template slot="title">
+                <!---图标-->
+                <i class="el-icon-menu"></i>
+                <!--文本-->
+                <span>订单列表</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu index="4">
+            <!--一级菜单的模板区域-->
+            <template slot="title">
+              <!---图标-->
+              <i class="el-icon-question"></i>
+              <!--文本-->
+              <span>反馈管理</span>
+            </template>
+            <el-menu-item index="admin-feedbacks"  @click="saveNavState('/admin-feedbacks')">
+              <template slot="title">
+                <!---图标-->
+                <i class="el-icon-menu"></i>
+                <!--文本-->
+                <span>反馈列表</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+      <!--右侧主体区域-->
+      <el-main>
+        <!--路由占位符-->
+        <router-view></router-view>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
-import store from '../store'
 export default {
-  name: "Home",
+  name: "Home.vue",
   data() {
     return {
-      activeIndex: '/home',
-      avatar: window.sessionStorage.getItem('avatar'),
-      searchContent: '',
-      activeIndex2: '1',
-      rent_way:'',
-      min_price: 0,
-      max_price: 0,
-      flag: 0,            //标记是search or select
-      currentPage: 1,
-      page_size: 2,
-      all_result_cnt: 0,  //总结果数
-      cur_result_cnt: 0,  //当前页结果数
-      room: [],
-    };
+      //是否折叠
+      isCollapse: true,
+      //被激活的链接地址
+      activePath: ''
+    }
   },
-  beforeRouteLeave (to, from, next) {
-    from.meta.keepAlive = false;
-    next();
+  created() {
+    this.saveNavState('/')
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
-    handleSelect(key, keyPath) {
-      /*if(key === '/home' || key === '/order' || key === '/appealRepair' || key === '/personalCenter'){
-        this.$store.commit('setActiveIndex', key);
-        this.$router.push({path: key});
-      }*/
-      this.$router.push({path: key});
-    },
     logout() {
-      this.$confirm('此操作将退出登录, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '已退出登录!'
-        });
-        window.sessionStorage.clear();
-        this.$router.push({path: '/login'});
-      }).catch(() => {
-        /*this.$message({
-          type: 'info',
-          message: '已取消退出!'
-        });*/
-      });
+      window.sessionStorage.clear();
+      this.$router.push("/login");
     },
-    handleChange1(val){
-      this.max_price = 0;
-      console.log(this.rent_way);
+    //点击按钮，切换菜单的折叠与展开
+    toggleCollpse() {
+      this.isCollapse = !this.isCollapse
     },
-    handleChange2(val){
-      console.log(this.max_price);
-    },
-    async searchHouse(){
-      if(this.flag === 1){
-        const {data: res} = await this.$http.get("room/search_room/",
-            {params: {'query':this.searchContent, 'pagenum': this.currentPage, 'pagesize': this.page_size}});
-        console.log(res);
-        if(res.result === 1){
-          this.all_result_cnt = res.all_result_cnt;
-          this.cur_result_cnt = res.cur_result_cnt;
-          this.room = res.room;
-        }
-        else{
-          this.$message.error("无符合条件的房源");
-          this.all_result_cnt = 0;
-          this.cur_result_cnt = 0;
-          this.room = [];
-        }
-        console.log(this.page_size);
-      }
-      else if(this.flag === 2){
-        const {data: res} = await this.$http.post("room/select_room/",
-            {'rent_way': this.rent_way, 'min_price': this.min_price, 'max_price': this.max_price, 'page_num': this.currentPage, 'page_size': this.page_size});
-        console.log(res);
-        if(res.result === 1){
-          this.all_result_cnt = res.all_result_cnt;
-          this.cur_result_cnt = res.cur_result_cnt;
-          this.room = res.room;
-        }
-        else{
-          this.$message.error("无符合条件的房源");
-          this.all_result_cnt = 0;
-          this.cur_result_cnt = 0;
-          this.room = [];
-        }
-      }
-      /*window.sessionStorage.setItem('all_result_cnt', this.all_result_cnt);
-      window.sessionStorage.setItem('cur_result_cnt', this.cur_result_cnt);
-      window.sessionStorage.setItem('room', this.room);*/
-    },
-    size_change(val){
-      console.log(val);
-      this.page_size = val;
-      this.searchHouse();
-    },
-    current_change(val){
-      console.log(val);
-      this.currentPage = val;
-      this.searchHouse();
-    },
-    handleSelect2(){
-
-    },
-    Info(index){
-      console.log(this.room[index]);
-      window.sessionStorage.setItem('room', JSON.stringify(this.room[index]));
-      //let rooms = JSON.stringify(this.room[index]);
-      //this.$router.push({path:'/home/info', query: {room: rooms}});
-      this.$router.push({path:'/home/info'});
-    },
+    //保存链接的激活状态
+    saveNavState(activePath) {
+      window.sessionStorage.setItem('activePath',activePath)
+      this.activePath = activePath
+    }
   }
 }
 </script>
 
-<style scoped>
-  .header {
-    width: 100%;
-    height: 180px;
-    background: #f5f5f6;
+<style lang="less" scoped>
+.home-container {
+  height: 100%;
+}
+.el-header {
+  background-color: #373d41;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 0;
+  align-items: center;
+  color: rgb(255, 255, 255);
+  font-size: 20px;
+  > div {
+    display: flex;
+    align-items: center;
+    span {
+      margin-left: 15px;
+    }
   }
-  span {
-    color: #000;
+}
+.el-aside {
+  background-color: #333744;
+  .el-menu {
+    border-right: none;
   }
-  .search {
-    width: 100%;
-  }
-  .crow {
-    line-height: 30px;
-  }
+}
+.el-main {
+  background-color: #EAEDF1;
+}
+.toggle-button {
+  background-color: #333744;
+  font-size: 10px;
+  line-height: 24px;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
 </style>

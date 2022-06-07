@@ -1,4 +1,19 @@
-# 北京航空航天大学软件学院2020级软件工程大作业
+# xiangmu
 
-- 4-17 创建了 pre-design 分支，提交了md版的文档
-  - 创建了 ZhangJh 分支，开始搞一点 UML 图
+## Project setup
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
