@@ -44,6 +44,10 @@
         <el-form-item label="手机号" prop="mobile">
           <el-input v-model="addForm.mobile"></el-input>
         </el-form-item>
+        <el-form-item label="验证码" prop="code">
+          <el-input v-model="addForm.code"></el-input>
+          <el-button type="primary" size="small" @click="getcode">获取验证码</el-button>
+        </el-form-item>
       </el-form>
       <!--底部区域-->
       <span slot="footer" class="dialog-footer">
@@ -85,7 +89,8 @@ export default {
         password2: '',
         email: '',
         mobile:'',
-        id:''
+        id:'',
+        code:''
       },
       //添加表单的验证规则对象
       addFormRules:{
@@ -111,6 +116,9 @@ export default {
         id:[
           { required : true, message:'请输入身份证号' ,trigger:'blur'},
           { min :18 ,max:18, message: '身份证号不为18位', trigger: 'blur'}
+        ],
+        code:[
+          { required : true, message:'请输入验证码' ,trigger:'blur'}
         ]
       }
     }
@@ -159,11 +167,17 @@ export default {
         if(!valid) return
         //可以发起注册的网络请求
         const {data:res}= await this.$http.post("user/register/",
-            {"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
+            {"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id,"code":this.addForm.code});
         if(res.result === 0) return this.$message.error(res.msg)
         this.$message.success("注册成功");
         this.addDialogVisible=false;
       })
+    },
+    getcode() {
+      const {data:res} = this.$http.post("user/sendEmail/",{"email":this.addForm.email})
+      console.log(res)
+      if(res.result === 1) return this.$message.success("验证码已发送到您的邮箱")
+      return this.$message.error("发送验证码失败")
     }
   }
 }
