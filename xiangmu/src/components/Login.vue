@@ -10,11 +10,11 @@
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="0px" class="login_form">
         <!--用户名-->
         <el-form-item prop="username">
-          <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user-fill"></el-input>
+          <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user-fill" placeholder="请输入手机号或邮箱"></el-input>
         </el-form-item>
         <!--密码-->
         <el-form-item prop="password">
-          <el-input v-model="loginForm.password" prefix-icon="iconfont icon-lock-fill" type="password"></el-input>
+          <el-input v-model="loginForm.password" prefix-icon="iconfont icon-lock-fill" type="password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item class="btns">
           <el-button type="primary" @click="login">登陆</el-button>
@@ -29,11 +29,11 @@
         <el-form-item label="用户名" prop="username">
           <el-input v-model="addForm.username"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password1">
-          <el-input v-model="addForm.password1"></el-input>
+        <el-form-item label="密码" prop="password1" >
+          <el-input v-model="addForm.password1" type="password"></el-input>
         </el-form-item>
         <el-form-item label="请再次输入密码" prop="password2">
-          <el-input v-model="addForm.password2"></el-input>
+          <el-input v-model="addForm.password2" type="password"></el-input>
         </el-form-item>
         <el-form-item label="身份证号" prop="id">
           <el-input v-model="addForm.id"></el-input>
@@ -44,8 +44,9 @@
         <el-form-item label="手机号" prop="mobile">
           <el-input v-model="addForm.mobile"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱验证码" prop="proof">
-          <el-input v-model="addForm.proof"></el-input>
+        <el-form-item label="验证码" prop="code">
+          <el-input v-model="addForm.code"></el-input>
+          <el-button type="primary" size="small" @click="getcode">获取验证码</el-button>
         </el-form-item>
       </el-form>
       <!--底部区域-->
@@ -90,7 +91,7 @@ export default {
         email: '',
         mobile:'',
         id:'',
-        proof:''
+        code:''
       },
       //添加表单的验证规则对象
       addFormRules:{
@@ -117,8 +118,8 @@ export default {
           { required : true, message:'请输入身份证号' ,trigger:'blur'},
           { min :18 ,max:18, message: '身份证号不为18位', trigger: 'blur'}
         ],
-        proof:[
-          { required : true, message:'请输入验证码' ,trigger:'blur'},
+        code:[
+          { required : true, message:'请输入验证码' ,trigger:'blur'}
         ]
       }
     }
@@ -171,12 +172,17 @@ export default {
         if(!valid) return
         //可以发起注册的网络请求
         const {data:res}= await this.$http.post("user/register/",
-            {"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,
-              "email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id,"code":this.addForm.proof});
+            {"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id,"code":this.addForm.code});
         if(res.result === 0) return this.$message.error(res.msg)
         this.$message.success("注册成功");
         this.addDialogVisible=false;
       })
+    },
+    getcode() {
+      const {data:res} = this.$http.post("user/sendEmail/",{"email":this.addForm.email})
+      console.log(res)
+      if(res.result === 1) return this.$message.success("验证码已发送到您的邮箱")
+      return this.$message.error("发送验证码失败")
     }
   }
 }

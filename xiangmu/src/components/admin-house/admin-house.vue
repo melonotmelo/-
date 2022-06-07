@@ -34,12 +34,31 @@
           </template>
         </el-table-column>
         <el-table-column label="简介" prop="introduction"></el-table-column>
-        <el-table-column label="操作" width="140px">
+        <el-table-column label="操作" width="200px">
           <template slot-scope="scope">
             <!--修改按钮-->
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             <!--删除按钮-->
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeOrderById(scope.row.id)"></el-button>
+            <el-form enctype="multipart/form-data">
+              <el-form-item>
+                <el-upload
+                    class="upload-demo"
+                    ref="upload"
+                    action=""
+                    :http-request="upload"
+                    multiple=""
+                    :auto-upload="false"
+                >
+                  <el-button slot="trigger" size="mini" type="primary" @click="idget(scope.row.id)">选取图片</el-button>
+                  <el-button
+                      style="margin-left: 10px"
+                      size="mini"
+                      type="success"
+                      @click="submitUpload">上传</el-button>
+                </el-upload>
+              </el-form-item>
+            </el-form>
           </template>
         </el-table-column>
       </el-table>
@@ -47,7 +66,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="queryInfo.pagenum"
-          :page-sizes="[1, 2, 5, 10]"
+          :page-sizes="[5, 10]"
           :page-size="queryInfo.pagesize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="this.roomData.total">
@@ -122,47 +141,55 @@ export default {
   data() {
     return {
       //获取用户列表的参数对象
-      queryInfo:{
-        query:'',
-        pagenum:1,
-        pagesize:1
+      queryInfo: {
+        query: '',
+        pagenum: 1,
+        pagesize: 5
       },
       roomData: {
         roomlist: [],
         total: 0
       },
       //控制对话框的出现与隐藏
-      addDialogVisible:false,
+      addDialogVisible: false,
       //添加用户的表单数据
       addForm: {
         name: '',
         address: '',
         available: true,
         long_price: '',
-        short_price:'',
-        introduction:''
+        short_price: '',
+        introduction: ''
       },
       //控制修改用户对话框的显示与隐藏
-      editDialogVisible :false,
+      editDialogVisible: false,
       //查询到的用户信息对象
-      editForm:{
-        id:'',
-        name:'',
-        address:'',
-        long_price:'',
+      editForm: {
+        id: '',
+        name: '',
+        address: '',
+        long_price: '',
         short_price: '',
         introduction: '',
         available: true
-      }
+      },
+      id: 1
     }
   },
   created() {
     this.getRoomList()
   },
-  methods : {
+  methods: {
     async getRoomList() {
       //const a= await this.$http.get("getUserByAdmin/",{params:{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize}})
-      const {data:res1}= await this.$http.get("room/search_room/",{params:{"query":this.queryInfo.query,"pagenum":this.queryInfo.pagenum,"pagesize":this.queryInfo.pagesize}} )
+      const {data: res1} = await this.$http.get("room/search_room/", {
+        params: {
+          "query": this.queryInfo.query,
+          "pagenum": this.queryInfo.pagenum,
+          "pagesize": this.queryInfo.pagesize,
+          "user": null
+        }
+      })
       console.log(res1)
       if (res1.result !== 1) {
         return this.$message.error('获取房源列表失败!')
@@ -185,15 +212,18 @@ export default {
       this.getRoomList()
     },
     async roomStateChanged(roominfo) {
-      const {data:res} = await this.$http.post('room/update_room/',{"id":roominfo.id,"available":roominfo.available})
-      if(res.result !== 1) {
+      const {data: res} = await this.$http.post('room/update_room/', {
+        "id": roominfo.id,
+        "available": roominfo.available
+      })
+      if (res.result !== 1) {
         roominfo.available = !roominfo.available
         return this.$message.error('更新房源状态失败!')
       }
       this.$message.success('更新房源状态成功')
     },
     //监听注册对话框的关闭事件
-    addDialogClosed(){
+    addDialogClosed() {
       this.$refs.addFormRef.resetFields()
     },
     //点击按钮，进行注册
@@ -217,10 +247,10 @@ export default {
     },
     async showEditDialog(id) {
       //console.log(id)
-      const {data:res} =await this.$http.get('room/get_room/',{params:{"id":id}})
+      const {data: res} = await this.$http.get('room/get_room/', {params: {"id": id}})
       console.log(res)
-      if(res.result !== 1) return this.$message.error('查询房源信息失败')
-      this.editForm.id=id
+      if (res.result !== 1) return this.$message.error('查询房源信息失败')
+      this.editForm.id = id
       this.editForm.name = res.room.name
       this.editForm.address = res.room.address
       this.editForm.long_price = res.room.long_price
@@ -242,12 +272,12 @@ export default {
           "id": this.editForm.id,
           "name": this.editForm.name,
           "address": this.editForm.address,
-          "available":this.editForm.available,
+          "available": this.editForm.available,
           "long_price": this.editForm.long_price,
           "short_price": this.editForm.short_price,
-          "introduction":this.editForm.introduction
+          "introduction": this.editForm.introduction
         })
-        if(res.result !== 1) return this.$message.error('更新房源信息失败')
+        if (res.result !== 1) return this.$message.error('更新房源信息失败')
         this.editDialogVisible = false
         this.getRoomList()
         this.$message.success('更新房源信息成功')
@@ -260,17 +290,41 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).catch(err =>{
+      }).catch(err => {
         return err
       })
       //console.log(confirmResult)
-      if(confirmResult!=='confirm') {
+      if (confirmResult !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      const {data:res} = await this.$http.post('room/del_room/',{"id":id})
-      if(res.result !== 1) return this.$message.error('删除房源失败')
+      const {data: res} = await this.$http.post('room/del_room/', {"id": id})
+      if (res.result !== 1) return this.$message.error('删除房源失败')
       this.$message.success('删除房源成功')
       this.getRoomList()
+    },
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
+    handleChange(file, fileList) {
+      this.fileList = fileList;
+      console.log(fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    upload(file) {
+      let fd = new FormData();
+      fd.append("id", this.id);
+      fd.append("img", file.file);
+
+      console.log(fd);
+
+      this.$http.post('room/upload_room_img/', fd).then((res) => {
+        console.log(res.data);
+      });
+    },
+    idget(id) {
+      this.id =id
     }
   }
 }

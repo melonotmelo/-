@@ -77,12 +77,12 @@
             </el-card>
         </el-tab-pane>
         <el-tab-pane label="处理反馈">
-            <el-card style="margin-bottom: 10px" v-if="data4Dlg.type==2">
+            <el-card style="margin-bottom: 10px" v-if="data4Dlg.type===2">
                 <span class="demonstration">联系师傅处理: </span>
                 <el-button size="small" round
                 icon="el-icon-s-custom" @click="callWorkers(data4Dlg.feedbackid)">联系师傅</el-button>
             </el-card>
-            <el-card class="input-card" v-if="data4Dlg.type==2">
+            <el-card class="input-card" v-if="data4Dlg.type===2">
                 <div>回复用户: </div>
                 <el-input class="input1"
                 type="textarea"
@@ -97,7 +97,7 @@
                 </el-button>
             </el-card>
 
-            <el-card v-if="data4Dlg.type==1">
+            <el-card v-if="data4Dlg.type===1">
             <div>回复用户: </div>
                 <el-input class="input2"
                 type="textarea"
@@ -198,7 +198,7 @@ export default {
             this.paginations.page_size = this.tableData.length;
         },
         handleCurrentChange(page) {
-            if(this.all_table_data.length == 0) {
+            if(this.all_table_data.length === 0) {
                 this.all_table_data = this.tableData;
             }
             // 当前页
@@ -212,7 +212,7 @@ export default {
             });
         },
         handleSizeChange(page_size) {
-            if(this.all_table_data.length == 0) {
+            if(this.all_table_data.length === 0) {
                 this.all_table_data = this.tableData;
             }
             // 切换size
@@ -223,7 +223,7 @@ export default {
             });
          },
         setPaginations() {
-            if(this.all_table_data.length == 0) {
+            if(this.all_table_data.length === 0) {
                 this.all_table_data = this.tableData;
             }
             // 总页数
@@ -237,7 +237,7 @@ export default {
         },
         //筛选
         handleSearch() {
-            if(this.all_table_data.length == 0) {
+            if(this.all_table_data.length === 0) {
                 this.all_table_data = this.tableData;
             }
             let pojo;
@@ -247,8 +247,8 @@ export default {
                 userid: this.search_data.search_userid             
             }
             for(let item of this.all_table_data) {
-                if((pojo.roomid === '' || item.roomid == pojo.roomid) && 
-                (pojo.userid === '' || item.userid == pojo.userid)) {
+                if((pojo.roomid === '' || item.roomid === pojo.roomid) &&
+                (pojo.userid === '' || item.userid === pojo.userid)) {
                     this.selected_table_data.push(item);
                 }
             }

@@ -10,11 +10,6 @@
     <el-card >
       <!--搜索与添加区域-->
       <el-row :gutter="20">
-        <el-col :span="8">
-          <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getOrderList">
-            <el-button slot="append" icon="el-icon-search" @click="getOrderList"></el-button>
-          </el-input>
-        </el-col>
         <el-col :span="4">
           <el-button type="primary" @click="addDialogVisible = true">添加订单</el-button>
         </el-col>
@@ -23,7 +18,6 @@
       <el-table :data="orderData.orderlist" border stripe>
         <el-table-column type="index"></el-table-column>
         <el-table-column label="订单id" prop="id"></el-table-column>
-        <el-table-column label="订单名字" prop="name"></el-table-column>
         <el-table-column label="房源id" prop="roomid"></el-table-column>
         <el-table-column label="房源地址" prop="address"></el-table-column>
         <el-table-column label="类型" prop="type"></el-table-column>
@@ -50,7 +44,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="queryInfo.pagenum"
-          :page-sizes="[1, 2, 5, 10]"
+          :page-sizes="[5, 10]"
           :page-size="queryInfo.pagesize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="orderData.total">
@@ -116,7 +110,7 @@ export default {
       queryInfo:{
         query:'',
         pagenum:1,
-        pagesize:1
+        pagesize:5
       },
       orderData: {
         orderlist: [],
