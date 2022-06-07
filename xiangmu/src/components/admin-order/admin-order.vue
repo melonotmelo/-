@@ -23,7 +23,6 @@
       <el-table :data="orderData.orderlist" border stripe>
         <el-table-column type="index"></el-table-column>
         <el-table-column label="订单id" prop="id"></el-table-column>
-        <el-table-column label="订单名字" prop="name"></el-table-column>
         <el-table-column label="房源id" prop="roomid"></el-table-column>
         <el-table-column label="房源地址" prop="address"></el-table-column>
         <el-table-column label="类型" prop="type"></el-table-column>
@@ -116,7 +115,7 @@ export default {
       queryInfo:{
         query:'',
         pagenum:1,
-        pagesize:1
+        pagesize:5
       },
       orderData: {
         orderlist: [],

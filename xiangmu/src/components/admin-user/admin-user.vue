@@ -39,10 +39,10 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
-        :page-sizes="[1, 2, 5, 10]"
+        :page-sizes="[5, 10]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="this.userData.total">
+        :total="userData.total">
     </el-pagination>
   </el-card>
   <!--添加用户的对话框-->
@@ -114,7 +114,7 @@ export default {
       queryInfo:{
         query:'',
         pagenum:1,
-        pagesize:1
+        pagesize:5
       },
       userData: {
         userlist: [],
@@ -190,7 +190,7 @@ export default {
       }
       this.$message.success('获取用户列表成功!')
       this.userData.userlist = res1.users
-      this.userData.total = res1.total
+      this.userData.total = res1.all_result_cnt
 
     },
     //监听pagesize 改变的事件

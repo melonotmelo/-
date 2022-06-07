@@ -47,7 +47,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="queryInfo.pagenum"
-          :page-sizes="[1, 2, 5, 10]"
+          :page-sizes="[5, 10]"
           :page-size="queryInfo.pagesize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="this.roomData.total">
@@ -125,7 +125,7 @@ export default {
       queryInfo:{
         query:'',
         pagenum:1,
-        pagesize:1
+        pagesize:5
       },
       roomData: {
         roomlist: [],
