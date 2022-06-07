@@ -10,11 +10,11 @@
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="0px" class="login_form">
         <!--用户名-->
         <el-form-item prop="username">
-          <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user-fill"></el-input>
+          <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user-fill" placeholder="请输入手机号或邮箱"></el-input>
         </el-form-item>
         <!--密码-->
         <el-form-item prop="password">
-          <el-input v-model="loginForm.password" prefix-icon="iconfont icon-lock-fill" type="password"></el-input>
+          <el-input v-model="loginForm.password" prefix-icon="iconfont icon-lock-fill" type="password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item class="btns">
           <el-button type="primary" @click="login">登陆</el-button>
@@ -29,11 +29,11 @@
         <el-form-item label="用户名" prop="username">
           <el-input v-model="addForm.username"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password1">
-          <el-input v-model="addForm.password1"></el-input>
+        <el-form-item label="密码" prop="password1" >
+          <el-input v-model="addForm.password1" type="password"></el-input>
         </el-form-item>
         <el-form-item label="请再次输入密码" prop="password2">
-          <el-input v-model="addForm.password2"></el-input>
+          <el-input v-model="addForm.password2" type="password"></el-input>
         </el-form-item>
         <el-form-item label="身份证号" prop="id">
           <el-input v-model="addForm.id"></el-input>
