@@ -2,10 +2,10 @@
   <el-container class="home-container">
     <!--头部区域 -->
     <el-header>
-      <div>
-        <img src="../assets/管理界面图标.png" alt="">
-        <span>青年租房管理系统</span>
-      </div>
+      <ElCol :span="6" class="logo-container">
+        <img src="../assets/houselogo.png" class="logo" alt="" width="20%">
+        <span class="title"> 青年房屋租赁系统</span>
+      </ElCol>
       <el-button type="info" @click="logout">退出</el-button>
     </el-header>
     <!-- 页面主体区域-->
@@ -72,6 +72,23 @@
               </template>
             </el-menu-item>
           </el-submenu>
+          <el-submenu index="4">
+            <!--一级菜单的模板区域-->
+            <template slot="title">
+              <!---图标-->
+              <i class="el-icon-question"></i>
+              <!--文本-->
+              <span>反馈管理</span>
+            </template>
+            <el-menu-item index="admin-feedbacks"  @click="saveNavState('/admin-feedbacks')">
+              <template slot="title">
+                <!---图标-->
+                <i class="el-icon-menu"></i>
+                <!--文本-->
+                <span>反馈列表</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
         </el-menu>
       </el-aside>
       <!--右侧主体区域-->
@@ -89,7 +106,7 @@ export default {
   data() {
     return {
       //是否折叠
-      isCollapse: false,
+      isCollapse: true,
       //被激活的链接地址
       activePath: ''
     }
@@ -126,7 +143,7 @@ export default {
   justify-content: space-between;
   padding-left: 0;
   align-items: center;
-  color: #fff;
+  color: rgb(255, 255, 255);
   font-size: 20px;
   > div {
     display: flex;
@@ -146,10 +163,10 @@ export default {
   background-color: #EAEDF1;
 }
 .toggle-button {
-  background-color: #4a5064;
+  background-color: #333744;
   font-size: 10px;
   line-height: 24px;
-  color: #fff;
+  color: rgb(255, 255, 255);
   text-align: center;
   letter-spacing: 0.2em;
   cursor: pointer;

@@ -120,12 +120,33 @@ export default {
     login(){
       this.$refs.loginFormRef.validate( async valid =>{
         if(!valid) return;
-        const { data: res }= await this.$http.post("user/login/",{"email": this.loginForm.username,"tel": this.loginForm.username,"password": this.loginForm.password});
+        const { data: res }= await this.$http.post("user/login/",
+            {"email": this.loginForm.username,"tel": this.loginForm.username,"password": this.loginForm.password});
         if(res.result!==1) return this.$message.error(res.msg);
         this.$message.success("登陆成功");
         window.sessionStorage.setItem("token",res.token);
         if(res.level === 'admin') return await this.$router.push("/home");
-        if(res.level === 'user')  return await this.$router.push("/home")//需要胡骄阳和石辛诚补一下地址
+        if(res.level === 'user') {
+          window.sessionStorage.setItem('id',res.id);
+          window.sessionStorage.setItem('password', this.loginForm.password);
+          const {data: res2} = await this.$http.post("user/getuser/", {'id': res.id});
+          console.log(res2);
+
+          window.sessionStorage.setItem('avatar', 'http://'+res2.avatar);
+          window.sessionStorage.setItem('username', res2.name);
+          window.sessionStorage.setItem('sex', res2.sex);
+          window.sessionStorage.setItem('mobile', res2.tel);
+          window.sessionStorage.setItem('email', res2.email);
+          window.sessionStorage.setItem('id_card', res2.id_card);
+
+          window.sessionStorage.setItem('flag', 0);
+          window.sessionStorage.setItem('min_price', 0);
+          window.sessionStorage.setItem('max_price', 0);
+          window.sessionStorage.setItem('rent_way', '');
+          window.sessionStorage.setItem('content', '');
+
+          return await this.$router.push("/room")//需要胡骄阳和石辛诚补一下地址
+        }
       });
     },
     //监听注册对话框的关闭事件
@@ -137,7 +158,8 @@ export default {
       this.$refs.addFormRef.validate(async valid =>{
         if(!valid) return
         //可以发起注册的网络请求
-        const {data:res}= await this.$http.post("user/register/",{"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
+        const {data:res}= await this.$http.post("user/register/",
+            {"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
         if(res.result === 0) return this.$message.error(res.msg)
         this.$message.success("注册成功");
         this.addDialogVisible=false;

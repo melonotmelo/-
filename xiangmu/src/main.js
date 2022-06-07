@@ -15,7 +15,7 @@ import axios from 'axios'
 axios.defaults.baseURL = 'http://81.70.132.82:8000/rms/'
 axios.interceptors.request.use(config=>{
   console.log(config)
-  config.headers.Authorization = window.sessionStorage.getItem('token')
+  //config.headers.Authorization = window.sessionStorage.getItem('token')
   return config
 })
 Vue.use(ElementUI);

@@ -189,8 +189,8 @@ export default {
         return this.$message.error('获取用户列表失败!')
       }
       this.$message.success('获取用户列表成功!')
-      this.userData.userlist = res1.room
-      this.userData.total = res1.all_result_cnt
+      this.userData.userlist = res1.users
+      this.userData.total = res1.total
 
     },
     //监听pagesize 改变的事件
