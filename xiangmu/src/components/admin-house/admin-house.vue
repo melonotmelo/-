@@ -34,12 +34,35 @@
           </template>
         </el-table-column>
         <el-table-column label="简介" prop="introduction"></el-table-column>
-        <el-table-column label="操作" width="140px">
+        <el-table-column label="操作" width="200px">
           <template slot-scope="scope">
             <!--修改按钮-->
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             <!--删除按钮-->
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeOrderById(scope.row.id)"></el-button>
+            <el-form enctype="multipart/form-data">
+              <el-form-item>
+                <el-upload
+                    class="upload-demo"
+                    ref="upload"
+                    action=""
+                    :http-request="upload"
+                    multiple=""
+                    :auto-upload="false"
+                >
+                  <el-button slot="trigger" size="mini" type="primary"
+                  >选取图片</el-button
+                  >
+                  <el-button
+                      style="margin-left: 10px"
+                      size="mini"
+                      type="success"
+                      @click="submitUpload(scope.row.id)"
+                  >上传</el-button
+                  >
+                </el-upload>
+              </el-form-item>
+            </el-form>
           </template>
         </el-table-column>
       </el-table>
@@ -153,7 +176,8 @@ export default {
         short_price: '',
         introduction: '',
         available: true
-      }
+      },
+      id:1
     }
   },
   created() {
@@ -271,7 +295,30 @@ export default {
       if(res.result !== 1) return this.$message.error('删除房源失败')
       this.$message.success('删除房源成功')
       this.getRoomList()
-    }
+    },
+    submitUpload(id) {
+      this.$refs.upload.submit();
+      this.id = id
+    },
+    handleChange(file, fileList) {
+      this.fileList = fileList;
+      console.log(fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    upload(file) {
+      let fd = new FormData();
+
+      fd.append("id", this.id);
+      fd.append("img", file.file);
+
+      console.log(fd);
+
+      this.$http.post('room/upload_room_img/', fd).then((res) => {
+        console.log(res.data);
+      });
+    },
   }
 }
 </script>
