@@ -44,12 +44,16 @@
         <el-form-item label="手机号" prop="mobile">
           <el-input v-model="addForm.mobile"></el-input>
         </el-form-item>
+        <el-form-item label="邮箱验证码" prop="proof">
+          <el-input v-model="addForm.proof"></el-input>
+        </el-form-item>
       </el-form>
       <!--底部区域-->
       <span slot="footer" class="dialog-footer">
-    <el-button @click="addDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="addUser">确 定</el-button>
-  </span>
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button @click="proof">发送验证码</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -85,7 +89,8 @@ export default {
         password2: '',
         email: '',
         mobile:'',
-        id:''
+        id:'',
+        proof:''
       },
       //添加表单的验证规则对象
       addFormRules:{
@@ -111,6 +116,9 @@ export default {
         id:[
           { required : true, message:'请输入身份证号' ,trigger:'blur'},
           { min :18 ,max:18, message: '身份证号不为18位', trigger: 'blur'}
+        ],
+        proof:[
+          { required : true, message:'请输入验证码' ,trigger:'blur'},
         ]
       }
     }
@@ -153,13 +161,18 @@ export default {
     addDialogClosed(){
         this.$refs.addFormRef.resetFields()
     },
+    async proof(){
+      const {data:res}= await this.$http.post("user/sendEmail/", {"email":this.addForm.email});
+      console.log(res);
+    },
     //点击按钮，进行注册
     addUser(){
       this.$refs.addFormRef.validate(async valid =>{
         if(!valid) return
         //可以发起注册的网络请求
         const {data:res}= await this.$http.post("user/register/",
-            {"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,"email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id});
+            {"username":this.addForm.username,"password_1":this.addForm.password1,"password_2":this.addForm.password2,
+              "email":this.addForm.email,"tel":this.addForm.mobile,"user_id":this.addForm.id,"code":this.addForm.proof});
         if(res.result === 0) return this.$message.error(res.msg)
         this.$message.success("注册成功");
         this.addDialogVisible=false;

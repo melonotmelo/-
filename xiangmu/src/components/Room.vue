@@ -59,7 +59,7 @@
           <el-radio :label="50" >50元以下</el-radio>
           <el-radio :label="70" >70元以下</el-radio>
           <el-radio :label="100" >100元以下</el-radio>
-          <el-radio :label="9000" >900元以下</el-radio>
+          <el-radio :label="900" >900元以下</el-radio>
         </el-radio-group>
       </el-row>
       <el-row style="margin-left: 73%">
@@ -105,7 +105,7 @@
                 <span>简介：{{item.introduction}}</span>
               </el-row>
               <el-row class="crow">
-                <span>更新时间：{{item.update_time}}</span>
+                <span>更新时间：{{item.update_time.substring(0, 10)}}</span>
               </el-row>
             </el-col>
             <el-col :span="8" style="height: 100%;">

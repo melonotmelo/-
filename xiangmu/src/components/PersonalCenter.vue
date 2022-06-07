@@ -71,13 +71,6 @@
         </el-descriptions-item>
         <el-descriptions-item>
           <template slot="label">
-            <i class="el-icon-lock"></i>
-            密码
-          </template>
-          {{Info.oldPassword}}
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template slot="label">
             <i class="el-icon-info"></i>
             性别
           </template>
@@ -148,9 +141,14 @@
         <el-form-item label="新邮箱" prop="newEmail">
           <el-input v-model="Info.newEmail" ></el-input>
         </el-form-item>
+        <el-form-item label="验证码" prop="proof">
+          <el-input v-model="Info.proof"></el-input>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="DialogVisible4 = false">取 消</el-button>
+        <el-button type="primary" v-if="flag === 1" @click="proof">发送验证码</el-button>
+        <el-button v-if="flag === 0">{{ time }}秒后再发送</el-button>
         <el-button type="primary" @click="changeEmail">确 定</el-button>
       </span>
     </el-dialog>
@@ -169,7 +167,7 @@ export default {
         oldAvatar: window.sessionStorage.getItem('avatar'),
         newAvatar: '',
         username: window.sessionStorage.getItem('username'),
-        sex: window.sessionStorage.getItem('sex'),
+        sex: window.sessionStorage.getItem('sex') === 'M' ? '男' : '女',
         oldPassword: window.sessionStorage.getItem('password'),
         password1: '',
         password2: '',
@@ -177,9 +175,11 @@ export default {
         newMobile: '',
         oldEmail: window.sessionStorage.getItem('email'),
         newEmail: '',
+        proof: '',
         id_card: window.sessionStorage.getItem('id_card'),
       },
-      imgName: '',
+      flag: 1,
+      time: 0,
 
       DialogVisible: false,
       DialogVisible1: false,
@@ -198,6 +198,9 @@ export default {
         ],
         newEmail:[
           { required: true, message:'请输入邮箱', trigger:'blur'},
+        ],
+        proof:[
+          { required: true, message:'请输入验证码', trigger:'blur'},
         ],
         newMobile:[
           { required: true, message:'请输入手机号', trigger:'blur'},
@@ -331,16 +334,31 @@ export default {
       this.$refs.emailRef.validate( async valid =>{
         //
         if(!valid) return;
-        const {data: res} = await this.$http.post("user/uploadEmail/",{"id": this.Info.id, "email":this.Info.newEmail});
+        const {data: res} = await this.$http.post("user/uploadEmail/",{"id": this.Info.id, "email":this.Info.newEmail, "code": this.Info.proof});
         console.log(res);
         if(res.result === 1){
           window.sessionStorage.setItem('email', this.Info.newEmail);
           this.Info.oldEmail = this.Info.newEmail;
           this.Info.newEmail = '';
           this.$message.success("更改邮箱成功");
+          this.time = 0;
+          this.flag = 1;
         }
         this.DialogVisible4=false;
       })
+    },
+    async proof(){
+      const {data:res}= await this.$http.post("user/sendEmail/", {"email":this.Info.newEmail});
+      console.log(res);
+      this.flag = 0;
+      this.time = 60;
+      var auth = setInterval(()=>{
+        this.time--;
+        if(this.time <= 0){
+          this.flag = 1;
+          clearInterval(auth);
+        }
+      }, 1000);
     }
   }
 }
