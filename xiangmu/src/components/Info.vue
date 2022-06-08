@@ -8,14 +8,14 @@
 
     <el-main>
       <el-row style="margin-top: 90px; height: 350px">
-        <el-col span="10" style="margin-left: 250px;">
+        <el-col span=10 style="margin-left: 250px;">
           <el-carousel trigger="click" height="350px">
             <el-carousel-item v-for="item in room.imgs" :key="item">
               <el-image :src="'http://' + item.url" style="height: 100%; width: 100%"></el-image>
             </el-carousel-item>
           </el-carousel>
         </el-col>
-        <el-col span="7" style="margin-left: 30px">
+        <el-col span=7 style="margin-left: 30px">
           <el-row>
             <span style="color:#FF552E;font-size: 30px">长租：{{room.long_price}} </span>
             <span style="color:#FF552E;"> 元/月</span>

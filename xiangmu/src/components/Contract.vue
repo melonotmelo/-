@@ -66,9 +66,6 @@
             <el-form-item label="身份证号">
               <el-input v-model="Info.id_card" disabled></el-input>
             </el-form-item>
-            <el-form-item label="电话">
-              <el-input v-model="Info.mobile" disabled></el-input>
-            </el-form-item>
             <el-form-item label="邮箱">
               <el-input v-model="Info.email" disabled></el-input>
             </el-form-item>
@@ -123,7 +120,7 @@ export default {
       Info:{
         id: window.sessionStorage.getItem('id'),
         username: window.sessionStorage.getItem('username'),
-        sex: window.sessionStorage.getItem('sex'),
+        sex: window.sessionStorage.getItem('sex') === 'M' ? '男' : '女',
         mobile: window.sessionStorage.getItem('mobile'),
         email: window.sessionStorage.getItem('email'),
         id_card: window.sessionStorage.getItem('id_card'),
@@ -213,7 +210,7 @@ export default {
         const {data: res} = await this.$http.post("order/add_roomorder/",
             {
               "user_id": this.Info.id,
-              "roomid": this.room_id,
+              "roomid": this.room.id,
               "long or short": this.ruleForm.rent_way,
               "begintime": this.ruleForm.date1,
               "endtime": this.ruleForm.date2

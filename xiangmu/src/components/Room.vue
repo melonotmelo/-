@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <el-container class="room-container">
     <!--<header></header>-->
     <!--导航菜单-->
     <el-header>
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal"
-               @select="handleSelect" style="padding-left: 15%; padding-right: 15%">
+               @select="handleSelect" background-color="#FFF9ED" style="padding-left: 15%; padding-right: 15%">
         <el-menu-item index="/room">租房</el-menu-item>
         <el-menu-item index="/center">订单中心</el-menu-item>
         <el-menu-item index="/repair" >投诉与报修</el-menu-item>
@@ -15,126 +15,126 @@
         <el-menu-item @click="logout" style="float: right">退出登录</el-menu-item>
       </el-menu>
     </el-header>
-
+    <el-main>
     <!--搜索框-->
-    <div class="header">
-      <div style="padding-top: 70px">
-        <el-row class="search" type="flex" justify="center">
-          <el-col :span="8">
-            <el-input
-                placeholder="请输入内容"
-                v-model="searchContent"
-                class="input"
-                style="border-radius: 0"
-            ></el-input>
-          </el-col>
-          <el-button type="primary"  @click="setFlag1">开始找房</el-button>
+      <div class="header">
+        <div style="padding-top: 70px">
+          <el-row class="search" type="flex" justify="center">
+            <el-col :span="8">
+              <el-input
+                  placeholder="请输入内容"
+                  v-model="searchContent"
+                  class="input"
+                  style="border-radius: 0"
+              ></el-input>
+            </el-col>
+            <el-button type="primary"  @click="setFlag1">开始找房</el-button>
+          </el-row>
+        </div>
+      </div>
+
+      <!--筛选条件-->
+      <div style="width: 60%;margin: 0 auto;padding: 20px">
+        <el-row class="crow">
+          <label>出租方式 </label>
+          <el-radio-group v-model="rent_way" @change="handleChange1">
+            <el-radio :label="'long'" >长租</el-radio>
+            <el-radio :label="'short'" >短租</el-radio>
+          </el-radio-group>
+        </el-row>
+        <el-row class="crow">
+          <label>长租月租 </label>
+          <el-radio-group :disabled="rent_way === 'short'" v-model="max_price" @change="handleChange2">
+            <el-radio :label="1000" >1000元以下</el-radio>
+            <el-radio :label="1500" >1500元以下</el-radio>
+            <el-radio :label="2000" >2000元以下</el-radio>
+            <el-radio :label="3000" >3000元以下</el-radio>
+            <el-radio :label="30000" >30000元以下</el-radio>
+          </el-radio-group>
+        </el-row>
+        <el-row class="crow">
+          <label>短租日租 </label>
+          <el-radio-group :disabled="rent_way === 'long'" v-model="max_price" @change="handleChange2">
+            <el-radio :label="30" >30元以下</el-radio>
+            <el-radio :label="50" >50元以下</el-radio>
+            <el-radio :label="70" >70元以下</el-radio>
+            <el-radio :label="100" >100元以下</el-radio>
+            <el-radio :label="10000" >10000元以下</el-radio>
+          </el-radio-group>
+        </el-row>
+        <el-row style="margin-left: 73%">
+          <el-button type="primary" @click="setFlag2" >确认选择</el-button>
         </el-row>
       </div>
-    </div>
 
-    <!--筛选条件-->
-    <div style="width: 60%;margin: 0 auto;padding: 20px">
-      <el-row class="crow">
-        <label>出租方式 </label>
-        <el-radio-group v-model="rent_way" @change="handleChange1">
-          <el-radio :label="'long'" >长租</el-radio>
-          <el-radio :label="'short'" >短租</el-radio>
-        </el-radio-group>
-      </el-row>
-      <el-row class="crow">
-        <label>长租月租 </label>
-        <el-radio-group :disabled="rent_way === 'short'" v-model="max_price" @change="handleChange2">
-          <el-radio :label="1000" >1000元以下</el-radio>
-          <el-radio :label="1500" >1500元以下</el-radio>
-          <el-radio :label="2000" >2000元以下</el-radio>
-          <el-radio :label="3000" >3000元以下</el-radio>
-          <el-radio :label="10000" >10000元以下</el-radio>
-        </el-radio-group>
-      </el-row>
-      <el-row class="crow">
-        <label>短租日租 </label>
-        <el-radio-group :disabled="rent_way === 'long'" v-model="max_price" @change="handleChange2">
-          <el-radio :label="30" >30元以下</el-radio>
-          <el-radio :label="50" >50元以下</el-radio>
-          <el-radio :label="70" >70元以下</el-radio>
-          <el-radio :label="100" >100元以下</el-radio>
-          <el-radio :label="900" >900元以下</el-radio>
-        </el-radio-group>
-      </el-row>
-      <el-row style="margin-left: 73%">
-        <el-button type="primary" @click="setFlag2" >确认选择</el-button>
-      </el-row>
-    </div>
-
-    <!--展示搜索信息-->
-    <div style="width: 60%;margin: 0 auto;padding: 10px">
-      <el-menu
-          :default-active="activeIndex2"
-          class="el-menu-demo"
-          mode="horizontal"
-          @select="handleSelect2"
-      >
-        <el-menu-item index="1">默认排序</el-menu-item>
-      </el-menu>
-      <el-row>
-        <h2>共找到{{all_result_cnt}}套可租房源</h2>
-      </el-row>
-      <el-divider></el-divider>
-      <el-row style="width:100%">
-        <el-col style="width:100%; float:left">
-          <el-row
-              :gutter="25"
-              style="height: 200px;padding-top:10px;border-bottom: 1px #DCDFE6 solid"
-              v-for="(item, index) in room"
-              :key="item.id"
-          >
-            <el-col :span="5" style="height: 100%">
-              <el-row style="height: 90%;">
-                <el-image :src="'http://' + item.imgs[0].url" style="height: 100%; width: 100%"></el-image>
-              </el-row>
-            </el-col>
-            <el-col :span="11">
-              <el-row>
-                <h2>{{item.name}}</h2>
-              </el-row>
-              <el-row class="crow">
-                <span>地址：{{item.address}}</span>
-              </el-row>
-              <el-row class="crow">
-                <span>简介：{{item.introduction}}</span>
-              </el-row>
-              <el-row class="crow">
-                <span>更新时间：{{item.update_time.substring(0, 10)}}</span>
-              </el-row>
-            </el-col>
-            <el-col :span="8" style="height: 100%;">
-              <el-row>
-                <span style="color:#FF552E;font-weight: bold;font-size: 28px">长租：{{item.long_price}}元/月</span>
-              </el-row>
-              <el-row>
-                <span style="color:#FF552E;font-weight: bold;font-size: 28px">短租：{{item.short_price}}元/日</span>
-              </el-row>
-              <el-row style="margin-top: 20%; margin-left: 13%" >
-                <el-button type="primary" @click="Info(index)">详细信息</el-button>
-              </el-row>
-            </el-col>
-          </el-row>
-        </el-col>
-      </el-row>
-      <el-pagination
-          @size-change="size_change"
-          @current-change="current_change"
-          :current-page.sync="currentPage"
-          :page-sizes="[2, 5, 10]"
-          :page-size="page_size"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="all_result_cnt"
-      ></el-pagination>
-    </div>
-
-
-  </div>
+      <!--展示搜索信息-->
+      <div style="width: 60%;margin: 0 auto;padding: 10px">
+        <el-menu
+            :default-active="activeIndex2"
+            class="el-menu-demo"
+            mode="horizontal"
+            background-color="rgba(255,249,237,0)"
+            @select="handleSelect2"
+        >
+          <el-menu-item index="1">默认排序</el-menu-item>
+        </el-menu>
+        <el-row>
+          <h2>共找到{{all_result_cnt}}套可租房源</h2>
+        </el-row>
+        <el-divider></el-divider>
+        <el-row style="width:100%">
+          <el-col style="width:100%; float:left">
+            <el-row
+                :gutter="25"
+                style="height: 200px;padding-top:10px;border-bottom: 1px #DCDFE6 solid"
+                v-for="(item, index) in room"
+                :key="item.id"
+            >
+              <el-col :span="5" style="height: 100%">
+                <el-row style="height: 90%;">
+                  <el-image :src="'http://' + item.imgs[0].url" style="height: 100%; width: 100%"></el-image>
+                </el-row>
+              </el-col>
+              <el-col :span="11">
+                <el-row>
+                  <h2>{{item.name}}</h2>
+                </el-row>
+                <el-row class="crow">
+                  <span>地址：{{item.address}}</span>
+                </el-row>
+                <el-row class="crow">
+                  <span>简介：{{item.introduction}}</span>
+                </el-row>
+                <el-row class="crow">
+                  <span>更新时间：{{item.update_time.substring(0, 10)}}</span>
+                </el-row>
+              </el-col>
+              <el-col :span="8" style="height: 100%;">
+                <el-row>
+                  <span style="color:#FF552E;font-weight: bold;font-size: 28px">长租：{{item.long_price}}元/月</span>
+                </el-row>
+                <el-row>
+                  <span style="color:#FF552E;font-weight: bold;font-size: 28px">短租：{{item.short_price}}元/日</span>
+                </el-row>
+                <el-row style="margin-top: 20%; margin-left: 13%" >
+                  <el-button type="primary" @click="Info(index)">详细信息</el-button>
+                </el-row>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+        <el-pagination
+            @size-change="size_change"
+            @current-change="current_change"
+            :current-page.sync="currentPage"
+            :page-sizes="[2, 5, 10]"
+            :page-size="page_size"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="all_result_cnt"
+        ></el-pagination>
+      </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
@@ -276,10 +276,19 @@ export default {
 </script>
 
 <style scoped>
+.room-container{
+  background: url("../assets/back.png");
+  /*height: 100%;*/
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-size: 100% 100%;
+}
+
 .header {
   width: 100%;
   height: 180px;
-  background: #f5f5f6;
+  background: #FFF9ED;
 }
 span {
   color: #000;

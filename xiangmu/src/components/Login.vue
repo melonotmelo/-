@@ -46,13 +46,13 @@
         </el-form-item>
         <el-form-item label="验证码" prop="code">
           <el-input v-model="addForm.code"></el-input>
-          <el-button type="primary" size="small" @click="getcode">获取验证码</el-button>
+          <el-button type="primary" v-if="flag === 1" size="small" @click="getcode">获取验证码</el-button>
+          <el-button type="primary" v-if="flag === 0" size="small" @click="getcode">{{ time }}秒后再发送</el-button>
         </el-form-item>
       </el-form>
       <!--底部区域-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button @click="proof">发送验证码</el-button>
         <el-button type="primary" @click="addUser">确 定</el-button>
       </span>
     </el-dialog>
@@ -83,6 +83,8 @@ export default {
         ]
       },
       addDialogVisible:false,
+      flag: 1,
+      time: 0,
       //添加用户的表单数据
       addForm:{
         username: '',
@@ -162,10 +164,6 @@ export default {
     addDialogClosed(){
         this.$refs.addFormRef.resetFields()
     },
-    async proof(){
-      const {data:res}= await this.$http.post("user/sendEmail/", {"email":this.addForm.email});
-      console.log(res);
-    },
     //点击按钮，进行注册
     addUser(){
       this.$refs.addFormRef.validate(async valid =>{
@@ -181,7 +179,18 @@ export default {
     getcode() {
       const {data:res} = this.$http.post("user/sendEmail/",{"email":this.addForm.email})
       console.log(res)
-      if(res.result === 1) return this.$message.success("验证码已发送到您的邮箱")
+      if(res.result === 1) {
+        this.flag = 0;
+        this.time = 60;
+        var auth = setInterval(()=>{
+          this.time--;
+          if(this.time <= 0){
+            this.flag = 1;
+            clearInterval(auth);
+          }
+        }, 1000);
+        return this.$message.success("验证码已发送到您的邮箱")
+      }
       return this.$message.error("发送验证码失败")
     }
   }

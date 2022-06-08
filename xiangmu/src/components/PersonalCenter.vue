@@ -2,7 +2,7 @@
   <div class="back">
     <el-header>
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal"
-               @select="handleSelect" style="padding-left: 15%; padding-right: 15%">
+               @select="handleSelect" background-color="#FFF9ED" style="padding-left: 15%; padding-right: 15%">
         <el-menu-item index="/room">租房</el-menu-item>
         <el-menu-item index="/center">订单中心</el-menu-item>
         <el-menu-item index="/repair" >投诉与报修</el-menu-item>
@@ -350,15 +350,19 @@ export default {
     async proof(){
       const {data:res}= await this.$http.post("user/sendEmail/", {"email":this.Info.newEmail});
       console.log(res);
-      this.flag = 0;
-      this.time = 60;
-      var auth = setInterval(()=>{
-        this.time--;
-        if(this.time <= 0){
-          this.flag = 1;
-          clearInterval(auth);
-        }
-      }, 1000);
+      if(res.result === 1) {
+        this.flag = 0;
+        this.time = 60;
+        var auth = setInterval(()=>{
+          this.time--;
+          if(this.time <= 0){
+            this.flag = 1;
+            clearInterval(auth);
+          }
+        }, 1000);
+        return this.$message.success("验证码已发送到您的邮箱")
+      }
+      return this.$message.error("发送验证码失败")
     }
   }
 }

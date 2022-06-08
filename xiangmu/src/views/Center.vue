@@ -1,7 +1,7 @@
 <template>
   <Menu>
     <el-breadcrumb separator=">">
-        <el-breadcrumb-item :to="{ path: '/login' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/room' }">首页</el-breadcrumb-item>
         <el-breadcrumb-item>订单中心</el-breadcrumb-item>
     </el-breadcrumb>
      <el-card class="body">
