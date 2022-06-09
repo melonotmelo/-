@@ -1,7 +1,6 @@
 <template>
   <div>
     <el-form enctype="multipart/form-data">
-      <img :src="url" />
       <el-form-item>
         <el-upload
             class="upload-demo"
@@ -21,9 +20,6 @@
               @click="submitUpload"
           >上传到服务器</el-button
           >
-          <div slot="tip" class="el-upload__tip">
-            只能上传jpg/png文件，且不超过500kb
-          </div>
         </el-upload>
       </el-form-item>
     </el-form>
@@ -60,7 +56,7 @@ export default {
 
       console.log(fd);
 
-      this.$http.post('user/uploadHeadshot/', fd).then((res) => {
+      this.$http.post('room/upload_room_img/', fd).then((res) => {
         console.log(res.data);
       });
     },

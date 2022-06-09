@@ -35,6 +35,7 @@ const router = new Router({
           {path:'/admin-house',component:AdminHouse},
           {path:'/admin-order',component:AdminOrder},
           {path:'/admin-feedbacks', component: AdminFeedbacks},
+          {path:'/test',component:TestUpload}
       ]
     },
     {

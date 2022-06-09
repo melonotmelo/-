@@ -20,7 +20,12 @@
         <el-table-column label="订单id" prop="id"></el-table-column>
         <el-table-column label="房源id" prop="roomid"></el-table-column>
         <el-table-column label="房源地址" prop="address"></el-table-column>
-        <el-table-column label="类型" prop="type"></el-table-column>
+        <el-table-column label="类型" >
+          <template slot-scope="scope" >
+            <p v-if="scope.row.type === true">长租</p>
+            <p v-else>短租</p>
+          </template>
+        </el-table-column>
         <el-table-column label="长租价格" prop="long_price"></el-table-column>
         <el-table-column label="短租价格" prop="short_price"></el-table-column>
         <el-table-column label="开始时间" prop="begintime"></el-table-column>
@@ -114,7 +119,8 @@ export default {
       },
       orderData: {
         orderlist: [],
-        total: 0
+        total: 0,
+        type:''
       },
       //控制对话框的出现与隐藏
       addDialogVisible:false,
@@ -157,7 +163,6 @@ export default {
       this.$message.success('获取订单列表成功!')
       this.orderData.orderlist = res1.orders
       this.orderData.total = res1.all_result_cnt
-
     },
     //监听pagesize 改变的事件
     handleSizeChange(newSize) {

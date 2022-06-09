@@ -50,12 +50,16 @@
                     multiple=""
                     :auto-upload="false"
                 >
-                  <el-button slot="trigger" size="mini" type="primary" @click="idget(scope.row.id)">选取图片</el-button>
+                  <el-button slot="trigger" size="small" type="primary"
+                  >选取图片</el-button
+                  >
                   <el-button
                       style="margin-left: 10px"
-                      size="mini"
+                      size="small"
                       type="success"
-                      @click="submitUpload">上传</el-button>
+                      @click="submitUpload(scope.row.id)"
+                  >上传</el-button
+                  >
                 </el-upload>
               </el-form-item>
             </el-form>
@@ -173,7 +177,7 @@ export default {
         introduction: '',
         available: true
       },
-      id: 1
+      id: ''
     }
   },
   created() {
@@ -258,6 +262,7 @@ export default {
       this.editForm.introduction = res.room.introduction
       this.editForm.available = res.room.available
       this.editDialogVisible = true
+      this.id = id
     },
     //监听修改用户对话框的关闭事件
     editDialogClosed() {
@@ -302,8 +307,11 @@ export default {
       this.$message.success('删除房源成功')
       this.getRoomList()
     },
-    submitUpload() {
+    submitUpload(id) {
+      this.id =id;
+      console.log(1);
       this.$refs.upload.submit();
+      console.log(2);
     },
     handleChange(file, fileList) {
       this.fileList = fileList;
@@ -314,6 +322,7 @@ export default {
     },
     upload(file) {
       let fd = new FormData();
+
       fd.append("id", this.id);
       fd.append("img", file.file);
 
@@ -322,9 +331,6 @@ export default {
       this.$http.post('room/upload_room_img/', fd).then((res) => {
         console.log(res.data);
       });
-    },
-    idget(id) {
-      this.id =id
     }
   }
 }
