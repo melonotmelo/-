@@ -176,8 +176,8 @@ export default {
         this.addDialogVisible=false;
       })
     },
-    getcode() {
-      const {data:res} = this.$http.post("user/sendEmail/",{"email":this.addForm.email})
+    async getcode() {
+      const {data:res} = await this.$http.post("user/sendEmail/",{"email":this.addForm.email})
       console.log(res)
       if(res.result === 1) {
         this.flag = 0;
