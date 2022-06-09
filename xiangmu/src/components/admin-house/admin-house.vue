@@ -50,14 +50,14 @@
                     multiple=""
                     :auto-upload="false"
                 >
-                  <el-button slot="trigger" size="small" type="primary"
+                  <el-button slot="trigger" size="mini" type="primary"
                   >选取图片</el-button
                   >
                   <el-button
                       style="margin-left: 10px"
-                      size="small"
+                      size="mini"
                       type="success"
-                      @click="submitUpload(scope.row.id)"
+                      @click="submitUpload"
                   >上传</el-button
                   >
                 </el-upload>
@@ -177,7 +177,8 @@ export default {
         introduction: '',
         available: true
       },
-      id: ''
+      id: '',
+      fileList:[]
     }
   },
   created() {
@@ -307,15 +308,12 @@ export default {
       this.$message.success('删除房源成功')
       this.getRoomList()
     },
-    submitUpload(id) {
-      this.id =id;
-      console.log(1);
+    submitUpload() {
+      this.$message.success("上传成功")
       this.$refs.upload.submit();
-      console.log(2);
     },
-    handleChange(file, fileList) {
-      this.fileList = fileList;
-      console.log(fileList);
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
     },
     handlePreview(file) {
       console.log(file);
@@ -331,7 +329,7 @@ export default {
       this.$http.post('room/upload_room_img/', fd).then((res) => {
         console.log(res.data);
       });
-    }
+    },
   }
 }
 </script>
