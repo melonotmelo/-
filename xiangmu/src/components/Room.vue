@@ -92,7 +92,8 @@
             >
               <el-col :span="5" style="height: 100%">
                 <el-row style="height: 90%;">
-                  <el-image :src="'http://' + item.imgs[0].url" style="height: 100%; width: 100%"></el-image>
+                  <el-image v-if="item.img_num > 0" :src="'http://' + item.imgs[0].url" style="height: 100%; width: 100%"></el-image>
+                  <el-image v-else src="../assets/zanwu.png" style="height: 100%; width: 100%"></el-image>
                 </el-row>
               </el-col>
               <el-col :span="11">
