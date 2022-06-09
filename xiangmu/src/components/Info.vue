@@ -8,10 +8,13 @@
 
     <el-main>
       <el-row style="margin-top: 90px; height: 350px">
-        <el-col span=10 style="margin-left: 250px;">
+        <el-col span=9 style="margin-left: 250px;">
           <el-carousel trigger="click" height="350px">
-            <el-carousel-item v-for="item in room.imgs" :key="item">
+            <el-carousel-item v-if="room.img_num > 0" v-for="item in room.imgs" :key="item">
               <el-image :src="'http://' + item.url" style="height: 100%; width: 100%"></el-image>
+            </el-carousel-item>
+            <el-carousel-item v-if="room.img_num === 0">
+              <el-image :src="require('../assets/zanwu.png')" style="height: 100%; width: 100%"></el-image>
             </el-carousel-item>
           </el-carousel>
         </el-col>
@@ -40,7 +43,7 @@
             <span >是否可租：{{room.available === 'false' ? '否' : '是'}}</span>
           </el-row>
           <el-row style="margin-top: 40px">
-            <el-col style="margin-left: 200px">
+            <el-col style="margin-left: 250px">
               <el-button type="primary" @click="contract">就 租 它 了 ！</el-button>
             </el-col>
           </el-row>

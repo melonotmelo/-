@@ -45,21 +45,21 @@
         <el-row class="crow">
           <label>长租月租 </label>
           <el-radio-group :disabled="rent_way === 'short'" v-model="max_price" @change="handleChange2">
-            <el-radio :label="1000" >1000元以下</el-radio>
-            <el-radio :label="1500" >1500元以下</el-radio>
-            <el-radio :label="2000" >2000元以下</el-radio>
-            <el-radio :label="3000" >3000元以下</el-radio>
-            <el-radio :label="30000" >30000元以下</el-radio>
+            <el-radio :label=1000 >1000元以下</el-radio>
+            <el-radio :label=1500 >1500元以下</el-radio>
+            <el-radio :label=2000 >2000元以下</el-radio>
+            <el-radio :label=3000 >3000元以下</el-radio>
+            <el-radio :label=30000 >30000元以下</el-radio>
           </el-radio-group>
         </el-row>
         <el-row class="crow">
           <label>短租日租 </label>
           <el-radio-group :disabled="rent_way === 'long'" v-model="max_price" @change="handleChange2">
-            <el-radio :label="30" >30元以下</el-radio>
-            <el-radio :label="50" >50元以下</el-radio>
-            <el-radio :label="70" >70元以下</el-radio>
-            <el-radio :label="100" >100元以下</el-radio>
-            <el-radio :label="10000" >10000元以下</el-radio>
+            <el-radio :label=30 >30元以下</el-radio>
+            <el-radio :label=50 >50元以下</el-radio>
+            <el-radio :label=70 >70元以下</el-radio>
+            <el-radio :label=100 >100元以下</el-radio>
+            <el-radio :label=10000 >10000元以下</el-radio>
           </el-radio-group>
         </el-row>
         <el-row style="margin-left: 73%">
@@ -93,7 +93,7 @@
               <el-col :span="5" style="height: 100%">
                 <el-row style="height: 90%;">
                   <el-image v-if="item.img_num > 0" :src="'http://' + item.imgs[0].url" style="height: 100%; width: 100%"></el-image>
-                  <el-image v-else src="../assets/zanwu.png" style="height: 100%; width: 100%"></el-image>
+                  <el-image v-if="item.img_num === 0" :src="require('../assets/zanwu.png')" style="height: 100%; width: 100%"></el-image>
                 </el-row>
               </el-col>
               <el-col :span="11">
@@ -208,6 +208,7 @@ export default {
       console.log(this.rent_way);
     },
     handleChange2(val){
+      console.log(this.min_price);
       console.log(this.max_price);
     },
     async searchHouse(){
@@ -231,7 +232,7 @@ export default {
       }
       else if(this.flag === 2){
         const {data: res} = await this.$http.post("room/select_room/",
-            {'rent_way': this.rent_way, 'min_price': this.min_price, 'max_price': this.max_price, 'page_num': this.currentPage, 'page_size': this.page_size});
+            {'min_price': this.min_price, 'max_price': this.max_price, 'page_num': this.currentPage, 'page_size': this.page_size});
         console.log(res);
         if(res.result === 1){
           this.all_result_cnt = res.all_result_cnt;
