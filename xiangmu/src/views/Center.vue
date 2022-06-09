@@ -213,12 +213,12 @@ export default {
         // 获取订单信息
         async getOrderList() {
             try {
-                const res = await axios.get('order/get_roomorder_by_userid/', {
+                const res = await this.$http.get('order/get_roomorder_by_userid/', {
                     params: {
-                        user_id: 2,
+                        'id': window.sessionStorage.getItem('id'),
                     }
                 });
-                //console.log(res);
+                console.log(res);
                 if(res.status !== 200) {
                     this.$message.error('获取用户订单失败：'+ res.statusText);
                     return;
@@ -230,7 +230,7 @@ export default {
                     } else {
                         this.tableData[i].type = '短租'
                     }
-                    if(this.tableData[i].valid == false) {
+                    if(this.tableData[i].valid === false) {
                         this.tableData[i].valid = '已缴费'
                     } else {
                         this.tableData[i].type = '未缴费'
@@ -249,7 +249,7 @@ export default {
 
         //筛选
         handleSearch() {
-            if(this.all_table_data.length == 0) {
+            if(this.all_table_data.length === 0) {
                 this.all_table_data = this.tableData;
             }
             let pojo;
@@ -260,7 +260,7 @@ export default {
                 valid: this.search_data.search_valid
             }
             for(let item of this.all_table_data) {
-                if((pojo.room_id === '' || item.room_id == pojo.room_id) && 
+                if((pojo.room_id === '' || item.room_id === pojo.room_id) &&
                 (pojo.type === "全部" || item.type === pojo.type) && 
                 (pojo.valid === '全部') || item.valid === pojo.valid) {
                     this.selected_table_data.push(item);
