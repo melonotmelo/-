@@ -232,22 +232,19 @@ export default {
       }
       else if(this.flag === 2){
         const {data: res} = await this.$http.post("room/select_room/",
-            {'min_price': this.min_price, 'max_price': this.max_price, 'page_num': this.currentPage, 'page_size': this.page_size});
+            {'rent_way': this.rent_way, 'min_price': this.min_price, 'max_price': this.max_price, 'page_num': this.currentPage, 'page_size': this.page_size});
         console.log(res);
-        if(res.result === 1){
           this.all_result_cnt = res.all_result_cnt;
           this.cur_result_cnt = res.cur_result_cnt;
           this.room = res.room;
-          window.sessionStorage.setItem('min_price', this.min_price);
-          window.sessionStorage.setItem('max_price', this.max_price);
-          window.sessionStorage.setItem('rent_way', this.rent_way);
-        }
-        else{
-          this.$message.error("无符合条件的房源");
-          this.all_result_cnt = 0;
-          this.cur_result_cnt = 0;
-          this.room = [];
-        }
+          if(this.all_result_cnt === 0){
+            this.$message.error("未搜索到匹配房源");
+          }
+          else{
+            window.sessionStorage.setItem('min_price', this.min_price);
+            window.sessionStorage.setItem('max_price', this.max_price);
+            window.sessionStorage.setItem('rent_way', this.rent_way);
+          }
       }
       /*window.sessionStorage.setItem('all_result_cnt', this.all_result_cnt);
       window.sessionStorage.setItem('cur_result_cnt', this.cur_result_cnt);
@@ -269,7 +266,8 @@ export default {
     Info(index){
       console.log(this.room[index]);
       window.sessionStorage.setItem('room', JSON.stringify(this.room[index]));
-      //let rooms = JSON.stringify(this.room[index]);
+      let rooms = JSON.stringify(this.room[index]);
+      console.log(rooms);
       //this.$router.push({path:'/home/info', query: {room: rooms}});
       this.$router.push({path:'/room/info'});
     },

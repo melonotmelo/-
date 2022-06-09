@@ -108,7 +108,7 @@ export default {
                 this.shortPrice = data.short_price;
                 this.longPrice = data.long_price;
                 this.introduction = data.introduction;
-                if(data.available == true) {
+                if(data.available === true) {
                     this.status = '当前可租';
                 } else {
                     this.status = '当前不可租'

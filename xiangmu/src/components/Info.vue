@@ -40,7 +40,7 @@
             <span >更新时间：{{room.update_time.substring(0, 10)}}</span>
           </el-row>
           <el-row style="margin-top: 30px">
-            <span >是否可租：{{room.available === 'false' ? '否' : '是'}}</span>
+            <span >是否可租：{{room.available === false ? '否' : '是'}}</span>
           </el-row>
           <el-row style="margin-top: 40px">
             <el-col style="margin-left: 250px">
@@ -78,7 +78,11 @@ export default {
     },
 
     contract(){
-      this.$router.push({path:'/room/info/contract'});
+      //console.log(this.room.available);
+      if(this.room.available === false)
+        this.$message.error("当前房间不可租住");
+      else if(this.room.available === true)
+        this.$router.push({path:'/room/info/contract'});
     }
   }
 }
