@@ -73,11 +73,11 @@ export default {
       },
       // 上传前处理
       beforeUpload(file) {
-        if(this.input == '') {
+        if(this.input === '') {
           this.$message("房间号不能为空")
           return false;
         }
-        else if(this.textarea == '') {
+        else if(this.textarea === '') {
           this.$message("输入内容不能为空");
           return false;
         }
@@ -110,8 +110,8 @@ export default {
         paramsData.append('id', 1); //用户id
         let i = 1;
         this.fileList.forEach((x) => {
-          if(i == 1) paramsData.append('img1', x.file);
-          else if(i == 2) paramsData.append('img2', x.file);
+          if(i === 1) paramsData.append('img1', x.file);
+          else if(i === 2) paramsData.append('img2', x.file);
           else appendData.append('img3', x.file);
           i++;
         });
@@ -124,11 +124,11 @@ export default {
         })
       },
       post_repair() {
-        if(this.input == '') {
+        if(this.input === '') {
           this.$message("房间号不能为空")
           return;
         }
-        else if(this.textarea == '') {
+        else if(this.textarea === '') {
           this.$message("输入内容不能为空");
           return;
         }

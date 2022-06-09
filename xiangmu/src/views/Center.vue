@@ -173,7 +173,7 @@ export default {
     },
     methods: {
         handleCurrentChange(page) {
-            if(this.all_table_data.length == 0) {
+            if(this.all_table_data.length === 0) {
                 this.all_table_data = this.tableData;
             }
             // 当前页
@@ -187,7 +187,7 @@ export default {
             });
         },
         handleSizeChange(page_size) {
-            if(this.all_table_data.length == 0) {
+            if(this.all_table_data.length === 0) {
                 this.all_table_data = this.tableData;
             }
             // 切换size
@@ -198,7 +198,7 @@ export default {
             });
          },
         setPaginations() {
-            if(this.all_table_data.length == 0) {
+            if(this.all_table_data.length === 0) {
                 this.all_table_data = this.tableData;
             }
             // 总页数
@@ -309,7 +309,7 @@ export default {
                     if(res.status !== 200) {
                         this.$message.error('订单号不存在：' + res.statusText);
                     } 
-                    else if(res.data.result == 0) {
+                    else if(res.data.result === 0) {
                         this.$message.error('无此租约');
                     }
                     else {
